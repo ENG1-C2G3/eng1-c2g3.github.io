@@ -5,3 +5,7 @@
 # Implementation
 # Executable JAR file
 # Version control repository
+# Appendix A: Architecture Designs
+## A.1: Initial Architecture Design
+
+![arch_1](arch_1.png)

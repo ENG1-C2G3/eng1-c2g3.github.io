@@ -18,7 +18,7 @@ Oh, and campus security doesn't want you to escape...
 ![arch2](/arch2.png)
 ## A.3: Second Iteration
 ![arch3](/arch3.png)
-## A.3: Third Iteration
+## A.4: Third Iteration
 ![arch4](/arch4.png)
-## A.4: Fourth Iteration
+## A.5: Fourth Iteration
 ![arch5](/arch5.png)

@@ -11,14 +11,16 @@ Oh, and campus security doesn't want you to escape...
 # Executable JAR file
 # Version control repository
 [Click here](https://github.com/ENG1-C2G3/maze-game) access the GitHub repository.
-# Appendix A: Architecture Designs
-## A.1: Initial Architecture Design
+# Appendix 
+## A: Architecture Designs
+### A.1: Initial Architecture Design
 ![arch1](/arch1.png)
-## A.2: First Iteration
+### A.2: First Iteration
 ![arch2](/arch2.png)
-## A.3: Second Iteration
+### A.3: Second Iteration
 ![arch3](/arch3.png)
-## A.4: Third Iteration
+### A.4: Third Iteration
 ![arch4](/arch4.png)
-## A.5: Fourth Iteration
+### A.5: Fourth Iteration
 ![arch5](/arch5.png)
+## B: Weekly Gantt Charts

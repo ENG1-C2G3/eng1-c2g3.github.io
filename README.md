@@ -14,13 +14,13 @@ Oh, and campus security doesn't want you to escape...
 # Appendix 
 ## A: Architecture Designs
 ### A.1: Initial Architecture Design
-![arch1](/arch1.png)
+![arch1](/assets/arch1.png)
 ### A.2: First Iteration
-![arch2](/arch2.png)
+![arch2](/assets/arch2.png)
 ### A.3: Second Iteration
-![arch3](/arch3.png)
+![arch3](/assets/arch3.png)
 ### A.4: Third Iteration
-![arch4](/arch4.png)
+![arch4](/assets/arch4.png)
 ### A.5: Fourth Iteration
-![arch5](/arch5.png)
+![arch5](/assets/arch5.png)
 ## B: Weekly Gantt Charts

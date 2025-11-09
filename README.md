@@ -14,8 +14,8 @@ Oh, and campus security doesn't want you to escape...
 - [Executable JAR File](#executable-jar-file)
 - [Version Control Repository](#version-control-repository)
 - [Appendix](#appendix)
-	- [A: Architecture Designs](#a-architecture-designs)
-		- [A.1: Initial Architecture Design](#a1-initial-architecture-design)
+	- [A: Structural Diagrams](#a-structural-diagrams)
+		- [A.1: Initial Architecture Structure](#a1-initial-architecture-structure)
 		- [A.2: First Iteration](#a2-first-iteration)
 		- [A.3: Second Iteration](#a3-second-iteration)
 		- [A.4: Third Iteration](#a4-third-iteration)
@@ -25,6 +25,12 @@ Oh, and campus security doesn't want you to escape...
 		- [B.2: Week 3](#b2-week-3)
 		- [B.3: Week 4](#b3-week-4)
 		- [B.4: Week 5](#b4-week-5)
+    - [C: Work Breakdown Structure](#c-work-breakdown-structure)
+    - [D: Structural Diagrams](#d-structural-diagrams)
+        - [D.1: Movement Use Case](#d1-movement-use-case)
+        - [D.2: Complete Exam Use Case](#d2-complete-exam-use-case)
+        - [D.3: Collision Use Case](#d3-collision-use-case)
+        - [D.4: Guard Use Case](#d4-guard-use-case)
 
 ---
 
@@ -43,8 +49,8 @@ View the [implementation documentation](https://docs.google.com/document/d/1-Vh3
 ## Version Control Repository
 View the [maze-game repository](https://github.com/ENG1-C2G3/maze-game)
 ## Appendix 
-### A: Architecture Designs
-#### A.1: Initial Architecture Design
+### A: Structural Diagrams
+#### A.1: Initial Architecture Structure
 ![arch1](/assets/arch1.png)
 #### A.2: First Iteration
 ![arch2](/assets/arch2.png)
@@ -65,3 +71,9 @@ View the [maze-game repository](https://github.com/ENG1-C2G3/maze-game)
 ![ganttw5](/assets/ganttw5.png)
 ### C: Work Breakdown Structure
 ![wbs](/assets/wbs.png)
+### D: Structural Diagrams
+#### D.1: Movement Use Case
+#### D.2: Complete Exam Use Case
+#### D.3: Collision Use Case
+#### D.4: Guard Use Case
+#### D.5: 

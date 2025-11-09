@@ -39,7 +39,7 @@ View the [risk assessment documentation](https://docs.google.com/document/d/1q2d
 ## Implementation
 View the [implementation documentation](https://docs.google.com/document/d/1-Vh3uXbzmQkqMuLtdtFiZ4HqbYDZRsB_MRf0836829E/edit?usp=sharing)
 ## Executable JAR File
-[Download the game](https://github.com/ENG1-C2G3/maze-game/releases/download/Release/GrepTheExit.jar)
+[Download the game](https://github.com/ENG1-C2G3/maze-game/releases/download/Final/GrepTheExit.jar)
 ## Version Control Repository
 View the [maze-game repository](https://github.com/ENG1-C2G3/maze-game)
 ## Appendix 

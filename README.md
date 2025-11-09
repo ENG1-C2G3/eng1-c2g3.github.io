@@ -31,6 +31,11 @@ Oh, and campus security doesn't want you to escape...
         - [D.2: Complete Exam Use Case](#d2-complete-exam-use-case)
         - [D.3: Collision Use Case](#d3-collision-use-case)
         - [D.4: Guard Use Case](#d4-guard-use-case)
+        - [D.5: Checkpoint Use Case](#d5-checkpoint-use-case)
+        - [D.6: Win Use Case](#d6-win-use-case)
+        - [D.7: MainMenu State Diagram](#d7-mainmenu-state-diagram)
+        - [D.8: PauseScreen State Diagram](#d8-pausescreen-state-diagram)
+        - [D.9: WinScreen State Diagram](#d9-winscreen-state-diagram)
 
 ---
 
@@ -73,7 +78,20 @@ View the [maze-game repository](https://github.com/ENG1-C2G3/maze-game)
 ![wbs](/assets/wbs.png)
 ### D: Structural Diagrams
 #### D.1: Movement Use Case
+![uc1](/assets/uc1.png)
 #### D.2: Complete Exam Use Case
+![uc2](/assets/uc2.png)
 #### D.3: Collision Use Case
+![uc3](/assets/uc3.png)
 #### D.4: Guard Use Case
-#### D.5: 
+![uc4](/assets/uc4.png)
+#### D.5: Checkpoint Use Case
+![uc5](/assets/uc5.png)
+#### D.6: Win Use Case
+![uc6](/assets/uc6.png)
+#### D.7: MainMenu State Diagram
+![state1](/assets/state1.png)
+#### D.8: PauseScreen State Diagram
+![state2](/assets/state2.png)
+#### D.9: WinScreen State Diagram
+![state3](/assets/state3.png)

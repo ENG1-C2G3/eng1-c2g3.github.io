@@ -1,8 +1,8 @@
-# Grep the Exit
-You fell asleep in a lecture, and woke up in a maze.<br>
-The only way out is to complete your exams, but can you find them in the labyrinth of halls?<br>
-Oh, and campus security doesn't want you to escape...
+---
+# Feel free to add content and custom Front Matter to this file.
+# To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
 
+layout: home
 ---
 
 ## Table of Contents
@@ -95,3 +95,4 @@ View the [maze-game repository](https://github.com/ENG1-C2G3/maze-game)
 ![state2](/assets/state2.png)
 #### D.9: WinScreen State Diagram
 ![state3](/assets/state3.png)
+

@@ -45,12 +45,7 @@ body {
   }
 }
 
-img {
-  width: 200px;
-}
-
 // Navigation
-
 .site-nav {
   display: grid;
   grid-column: content;
@@ -66,12 +61,59 @@ img {
 }
 
 // Mobile Menu
-.trigger, .menu-trigger {
+.menu-trigger {
   display: none;
 }
 
-#menu-trigger:checked ~ .trigger {
-  display: flex;
+.nav-sidebar {
+  display: none;
+  position: absolute;
+  height:100%;
+  background-color: $secondary-color;
 }
+
+.menu-trigger:checked ~ .nav-sidebar {
+    display: block;
+}
+
+// Blinking cursor elements.
+.blinking-cursor {
+  animation: cursor 1.5s infinite;
+}
+
+@keyframes cursor {
+  0%, 100% {
+    opacity: 0;
+  }
+
+  60% {
+    opacity: 1;
+  }
+}
+
+// Links + Buttons
+a {
+  text-decoration: none;
+  color: $tritary-color;
+}
+
+.navbar-link {
+  border-style: solid;
+  border-radius: var(--border-radius);
+  border-color: $primary-color;
+  color: $primary-color;
+  padding: 4px var(--padding);
+  font-weight: bold;
+}
+
+
+// Misc
+.site-code {
+  user-select: none;
+  font-weight: bold;
+}
+
+
+
 
 

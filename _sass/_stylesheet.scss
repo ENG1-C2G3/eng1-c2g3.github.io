@@ -1,4 +1,4 @@
-$tablet: "width >= 480px";
+$mobile: "width <= 720px";
 $desktop: "width >= 720px";
 
 $primary-color: #0F002A;
@@ -6,7 +6,7 @@ $secondary-color: #e6ffef;
 $tritary-color: #877F94;
 
 :root {
-  --content-max-width: 40.625rem;
+  --content-max-width: min(100% - 2 * var(--padding) ,40.625rem);
   --padding: 12px;
   --border-radius: 12px;
   --header-font-size: 2em;
@@ -45,7 +45,7 @@ body {
   }
 }
 
-// Navigation
+// Navigation + Sidebar
 .site-nav {
   display: grid;
   grid-column: content;
@@ -60,20 +60,11 @@ body {
   justify-content: end;
 }
 
-// Mobile Menu
-.menu-trigger {
-  display: none;
-}
-
 .nav-sidebar {
   display: none;
-  position: absolute;
+  position: fixed;
   height:100%;
   background-color: $secondary-color;
-}
-
-.menu-trigger:checked ~ .nav-sidebar {
-    display: block;
 }
 
 // Blinking cursor elements.
@@ -106,6 +97,12 @@ a {
   font-weight: bold;
 }
 
+.navbar-button {
+  border: none;
+  background-color: $secondary-color;
+  cursor:pointer;
+}
+
 
 // Misc
 .site-code {
@@ -117,6 +114,26 @@ img {
   width: 200px;
 }
 
-
+// Mobile Responsiveness
+.mobile-only
+{
+  display: none;
+}
+@media screen and ($mobile) {
+  .site-nav {
+    grid-template-columns: 32px 1fr;
+  }
+  .right-nav {
+    justify-content: center;
+  }
+  .mobile-only
+  {
+    display: block;
+  }
+  .desktop-only
+  {
+    display: none;
+  }
+}
 
 

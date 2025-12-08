@@ -5,7 +5,6 @@
 layout: home
 ---
 
-## Table of Contents
 - [Requirements](#requirements)
 - [Architecture](#architecture)
 - [Method Selection and Planning](#method-selection-and-planning)

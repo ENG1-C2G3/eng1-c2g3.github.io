@@ -1,0 +1,174 @@
+$mobile: "width <= 720px";
+$desktop: "width >= 720px";
+
+$primary-color: #0F002A;
+$secondary-color: #e6ffef;
+$tritary-color: #877F94;
+
+:root {
+  --content-max-width: min(100% - 2 * var(--padding) ,40.625rem);
+  --sidebar-width: min(100% - 18px, 360px);
+  --header-padding: 24px;
+  --padding: 12px;
+  --border-radius: 12px;
+  --header-font-size: 2em;
+}
+
+body {
+  background-color: $primary-color;
+  color: $secondary-color;
+  font-family: system-ui,sans-serif;
+
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: [full-width-start] 1fr [content-start] var(--content-max-width) [content-end] 1fr [full-width-end];
+
+  & > * {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-auto-rows: min-content;
+    grid-column: content;
+
+    border: solid;
+    border-width: calc(var(--border-radius) / 2);
+    border-color: $tritary-color;
+    border-radius: var(--border-radius);
+  }
+
+  & > main {
+    border: none;
+  }
+
+  & > header {
+    font-size: var(--header-font-size);
+    background-color: $secondary-color;
+    padding: var(--padding);
+    grid-column: full-width;
+  }
+
+  & > footer {
+    color: $primary-color;
+    background-color: $secondary-color;
+    padding: var(--padding);
+    grid-column: full-width;
+  }
+}
+
+// Navigation + Sidebar
+.site-nav {
+  display: grid;
+  grid-column: full-width;
+  grid-template-columns: 1fr 1fr;
+  margin-inline: auto;
+  width: min(calc(100% - 2 * var(--header-padding)), calc( 1.5 * var(--content-max-width)));
+}
+
+.left-nav {
+  display: flex;
+}
+
+.right-nav{
+  display: grid;
+  grid-gap: var(--padding);
+  grid-auto-flow: column;
+  justify-content: end;
+}
+
+.sidebar-buttons {
+  display: grid;
+  grid-gap: var(--padding);
+  padding: var(--padding);
+}
+
+.navbar-link {
+  border-style: solid;
+  border-color: $primary-color;
+  font-weight: bold;
+  text-align: center;
+
+}
+
+.site-title, .navbar-link {
+  color: $primary-color;
+  border-radius: var(--border-radius);
+  padding: 4px var(--padding);
+
+  &:hover, &:focus {
+    background-color: $primary-color;
+    color: $secondary-color;
+  }
+
+  &:hover {
+    transition-duration: 420ms;
+  }
+}
+
+.skip-navigation {
+  font-size: var(--font-size-big);
+  font-weight: 900;
+  position: absolute;
+  transform: translateY(-200%);
+  margin-inline-start: var(--padding);
+  padding: var(--padding);
+
+  &:focus {
+    transform: translateY(0);
+  }
+}
+
+// Blinking cursor elements.
+.blinking-cursor {
+  animation: cursor 1.5s infinite;
+}
+
+@keyframes cursor {
+  0%, 100% {
+    opacity: 0;
+  }
+
+  60% {
+    opacity: 1;
+  }
+}
+
+// Misc
+.site-code {
+  user-select: none;
+  font-weight: bold;
+}
+
+img {
+  width: 200px;
+}
+
+.svg-icon {
+  width: 32px;
+  height: 32px;
+}
+
+a {
+  text-decoration: none;
+  color: $tritary-color;
+}
+
+@media screen and ($mobile) {
+  body > header {
+    padding: var(--padding) 0px;
+  }
+
+  .left-nav, .right-nav {
+    justify-content: center;
+    grid-auto-flow: row;
+  }
+
+  body > header {
+    display: inherit;
+  }
+
+  .site-nav {
+    grid-template-columns: none;
+    grid-gap: var(--padding);
+  }
+}
+
+

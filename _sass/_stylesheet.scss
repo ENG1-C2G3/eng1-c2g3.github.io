@@ -28,21 +28,28 @@ body {
     grid-template-columns: subgrid;
     grid-auto-rows: min-content;
     grid-column: content;
+
+    border: solid;
+    border-width: calc(var(--border-radius) / 2);
+    border-color: $tritary-color;
+    border-radius: var(--border-radius);
+  }
+
+  & > main {
+    border: none;
   }
 
   & > header {
     font-size: var(--header-font-size);
     background-color: $secondary-color;
     padding: var(--padding);
-    border-radius: var(--border-radius);
     grid-column: full-width;
   }
 
   & > footer {
-    color: $tritary-color;
+    color: $primary-color;
     background-color: $secondary-color;
     padding: var(--padding);
-    border-radius: var(--border-radius);
     grid-column: full-width;
   }
 }
@@ -71,22 +78,6 @@ body {
   display: grid;
   grid-gap: var(--padding);
   padding: var(--padding);
-}
-
-// Navigation Buttons + Links
-.menu-trigger {
-  font-size: 1em;
-  background-color: $secondary-color;
-  cursor:pointer;
-  border-width: 3px;
-  display: none;
-}
-.menu-trigger:checked ~ .nav-sidebar {
-  display: block;
-}
-
-.menu-trigger:checked ~ .left-nav > .nav-sidebar {
-  display: block;
 }
 
 .navbar-link {

@@ -9,12 +9,23 @@
 
 
     <nav class="site-nav">
-      <div class="nav-prompt-name">
-        <a class="site-title" rel="author" href="{{ "/" | relative_url }}">
-          <code class="site-code">groupOne@{{ site.titleNoSpaces }}:~$
-            <span class="blinking-cursor">█</span>
-          </code>
-        </a>
+      <div class="center-box">
+        <div class="center-item">
+          <div class="nav-prompt-grid">
+            <a class="site-title" rel="author" href="{{ "/" | relative_url }}">
+              <code class="site-code">groupOne@{{ site.titleNoSpaces }}:~$</code>
+            </a>
+
+            <code class="subtitle">~</code>
+          </div>
+        </div>
+
+        <div class="nav-add-icon">
+          <input id="new-tab-checkbox" type="checkbox" class="checkbox"/>
+          <label for="new-tab-checkbox">
+            <img class="icons" src="assets/icons/plus-large-square-outline-symbolic.svg"/>
+          </label>
+        </div>
       </div>
 
       <!--<div class="right-nav">

@@ -21,23 +21,23 @@
         </div>
 
         <div class="nav-add-icon">
-          <input id="new-tab-checkbox" type="checkbox" class="checkbox"/>
-          <label for="new-tab-checkbox">
-            <img class="icons" src="assets/icons/plus-large-square-outline-symbolic.svg"/>
+          <button popovertarget="new-tab-popover" class="icon-button new-tab-button"/>
+          <label>
+            <img class="icons" src="/assets/icons/menu-symbolic.svg"/>
           </label>
         </div>
       </div>
 
-      <!--<div class="right-nav">
-
-
+      <div popover id="new-tab-popover" class="pop-over">
+        <div class="pop-over-content">
         {%- for path in page_paths -%}
           {%- assign my_page = site.pages | where: "path", path | first -%}
           {%- if my_page.title -%}
           <a class="navbar-link" href="{{ my_page.url | relative_url }}">{{ my_page.title | escape }}</a>
           {%- endif -%}
         {%- endfor -%}
-      </div>-->
+        </div>
+      </div>
     </nav>
   {%- endif -%}
   </div>

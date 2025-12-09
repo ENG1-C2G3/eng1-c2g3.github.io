@@ -58,20 +58,14 @@ body {
 .site-nav {
   display: grid;
   grid-column: full-width;
-  grid-template-columns: 1fr 1fr;
+  // grid-template-columns: 1fr 1fr;
   margin-inline: auto;
   width: min(calc(100% - 2 * var(--header-padding)), calc( 1.5 * var(--content-max-width)));
 }
 
-.left-nav {
+.nav-prompt-name {
   display: flex;
-}
-
-.right-nav{
-  display: grid;
-  grid-gap: var(--padding);
-  grid-auto-flow: column;
-  justify-content: end;
+  justify-content: center;
 }
 
 .sidebar-buttons {
@@ -156,8 +150,7 @@ a {
     padding: var(--padding) 0px;
   }
 
-  .left-nav, .right-nav {
-    justify-content: center;
+  .nav-prompt-name {
     grid-auto-flow: row;
   }
 

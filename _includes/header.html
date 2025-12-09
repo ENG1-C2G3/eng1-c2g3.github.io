@@ -9,7 +9,7 @@
 
 
     <nav class="site-nav">
-      <div class="left-nav">
+      <div class="nav-prompt-name">
         <a class="site-title" rel="author" href="{{ "/" | relative_url }}">
           <code class="site-code">groupOne@{{ site.titleNoSpaces }}:~$
             <span class="blinking-cursor">█</span>
@@ -17,7 +17,7 @@
         </a>
       </div>
 
-      <div class="right-nav">
+      <!--<div class="right-nav">
 
 
         {%- for path in page_paths -%}
@@ -26,7 +26,7 @@
           <a class="navbar-link" href="{{ my_page.url | relative_url }}">{{ my_page.title | escape }}</a>
           {%- endif -%}
         {%- endfor -%}
-      </div>
+      </div>-->
     </nav>
   {%- endif -%}
   </div>

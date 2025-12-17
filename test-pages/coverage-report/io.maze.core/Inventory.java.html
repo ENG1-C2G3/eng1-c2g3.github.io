@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Inventory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.maze.core</a> &gt; <span class="el_source">Inventory.java</span></div><h1>Inventory.java</h1><pre class="source lang-java linenums">package io.maze.core;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Inventory {
+    private List&lt;InventoryItem&gt; slots;
+
+<span class="nc" id="L9">    public Inventory(int size) {</span>
+<span class="nc" id="L10">        slots = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L11" title="All 2 branches missed.">        for (int i = 0; i &lt; size; i++) {</span>
+<span class="nc" id="L12">            slots.add(new InventoryItem()); //empty slots</span>
+        }
+<span class="nc" id="L14">    }</span>
+
+    public boolean addItem(int itemType) {
+<span class="nc bnc" id="L17" title="All 2 branches missed.">        for (int i = 0; i &lt; slots.size(); i++) {</span>
+<span class="nc bnc" id="L18" title="All 2 branches missed.">            if (slots.get(i).isEmpty()) {</span>
+<span class="nc" id="L19">                slots.set(i, new InventoryItem(itemType));</span>
+<span class="nc" id="L20">                return true;</span>
+            }
+        }
+<span class="nc" id="L23">        return false; //inventory is full</span>
+    }
+
+    public int useItem(int slot) {
+        //check if slot is valid and has an item in it
+<span class="nc bnc" id="L28" title="All 6 branches missed.">        if (slot &gt;= 0 &amp;&amp; slot &lt; slots.size() &amp;&amp; !slots.get(slot).isEmpty()) {</span>
+            //get what type of item is in the current slot
+<span class="nc" id="L30">            int itemType = slots.get(slot).getType();</span>
+            //replace the current slot with an empty item
+<span class="nc" id="L32">            slots.set(slot, new InventoryItem()); //make empty</span>
+            //return the itemt ype do the game knows which of the two effects to apply
+<span class="nc" id="L34">            return itemType;</span>
+        }
+        //if the slot was invalid or empty then simply return empty
+<span class="nc" id="L37">        return InventoryItem.EMPTY;</span>
+    }
+
+    public List&lt;InventoryItem&gt; getSlots() {
+<span class="nc" id="L41">        return slots;</span>
+    }
+
+    public boolean isFull() {
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        for (InventoryItem item : slots) {</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">            if (item.isEmpty()) return false;</span>
+<span class="nc" id="L47">        }</span>
+<span class="nc" id="L48">        return true;</span>
+    }
+
+    public void dispose() {
+<span class="nc bnc" id="L52" title="All 2 branches missed.">        for (InventoryItem item : slots) {</span>
+<span class="nc" id="L53">            item.dispose();</span>
+<span class="nc" id="L54">        }</span>
+<span class="nc" id="L55">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

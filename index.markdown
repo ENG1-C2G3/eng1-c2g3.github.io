@@ -10,6 +10,7 @@ layout: home
 - [Method Selection and Planning](#method-selection-and-planning)
 - [Risk Assessment and Mitigation](#risk-assessment-and-mitigation)
 - [Implementation](#implementation)
+- [Testing](#testing)
 - [Executable JAR File](#executable-jar-file)
 - [Version Control Repository](#version-control-repository)
 - [Appendix](#appendix)
@@ -48,6 +49,10 @@ View the [plan documentation](https://docs.google.com/document/d/1KfvuGMK_qkdju_
 View the [risk assessment documentation](https://docs.google.com/document/d/1q2dpIEfY9WkbCrqf0yL3F4u0QLPalGq8bDHmsISkQVg/edit?usp=sharing)
 ## Implementation
 View the [implementation documentation](https://docs.google.com/document/d/1-Vh3uXbzmQkqMuLtdtFiZ4HqbYDZRsB_MRf0836829E/edit?usp=sharing)
+## Testing
+- View the [Gradle test report](/test-pages/gradle-test-report/index.html)
+- View the [Coverage Report](/test-pages/coverage-report/index.html)
+- View the [Manual Tests](/manual-tests)
 ## Executable JAR File
 [Download the game](https://github.com/ENG1-C2G3/maze-game/releases/download/Final/GrepTheExit.jar)
 ## Version Control Repository

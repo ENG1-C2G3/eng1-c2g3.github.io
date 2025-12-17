@@ -1,0 +1,913 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GameScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.maze.screens</a> &gt; <span class="el_source">GameScreen.java</span></div><h1>GameScreen.java</h1><pre class="source lang-java linenums">package io.maze.screens;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+
+import io.maze.core.CollisionChecker;
+import io.maze.core.Inventory;
+import io.maze.core.InventoryItem;
+import io.maze.core.Main;
+import io.maze.entities.Guard;
+import io.maze.entities.Player;
+import io.maze.objects.Exam;
+import io.maze.objects.Keypad;
+import io.maze.objects.Locker;
+import io.maze.objects.Npc;
+import io.maze.objects.Portal;
+
+/**
+ * Represents the game screen of the application.
+ *
+ * @see com.badlogic.gdx.Screen Screen
+ */
+public class GameScreen implements Screen {
+    final Main game;
+
+    private final FitViewport viewport;
+
+    private TiledMap map;
+    private OrthogonalTiledMapRenderer mapRenderer;
+    private final OrthographicCamera camera;
+
+    private final Player player;
+
+    private MapObjects collisionObjects, objectObjects, checkpointObjects, finishObjects; //removed final as multiple maps means updating these values
+    private List&lt;String&gt; reachedCheckpoints;
+
+    private ArrayList&lt;Guard&gt; guards;
+    private ArrayList&lt;Npc&gt; students;
+    private ArrayList&lt;Keypad&gt; keypads;
+
+    private final ArrayList&lt;Exam&gt; exams;
+    private List&lt;String&gt; completedExamNames;
+
+<span class="nc" id="L57">    private Boolean isPaused = false;</span>
+
+<span class="nc" id="L59">    private int score = 0;</span>
+
+    private final FitViewport hudViewport;
+    private final OrthographicCamera hudCamera;
+    private final BitmapFont font;
+    private float timeLeft;
+
+    private ArrayList&lt;Locker&gt; lockers;
+    private Inventory inventory;
+    private BitmapFont inventoryFont;
+
+<span class="nc" id="L70">    private float speedBoostTimer = 0f;</span>
+<span class="nc" id="L71">    private boolean hasSpeedBoost = false;</span>
+    private float origninalPlayerSpeed;
+    private Portal portal;
+    private String currentMapPath;
+
+<span class="nc" id="L76">    private boolean hasSpeedReduction = false;</span>
+
+<span class="nc" id="L78">    private float immunityTimer = 0f;</span>
+<span class="nc" id="L79">    private boolean hasImmunity = false;</span>
+<span class="nc" id="L80">    private float guardSpeedMultiplier = 1f;</span>
+<span class="nc" id="L81">    private float guardSpeedTimer = 0f;</span>
+<span class="nc" id="L82">    private boolean guardsSpedUp = false;</span>
+
+    //track all events to updat the event tracker 
+<span class="nc" id="L85">    private boolean examInteractionCounted = false; //positive</span>
+<span class="nc" id="L86">    private boolean appleInteractionCounted = false; //positive</span>
+<span class="nc" id="L87">    private boolean cookieInteractionCounted = false; //positive</span>
+<span class="nc" id="L88">    private boolean guardCollisionCounted = false; //negative </span>
+<span class="nc" id="L89">    private boolean rottenAppleCounted = false; //negative</span>
+<span class="nc" id="L90">    private boolean doorUnlockedCounted = false; //negative</span>
+<span class="nc" id="L91">    private boolean npc4InteractionCounted = false; //negative</span>
+<span class="nc" id="L92">    private boolean firstLockerCounted = false; //hidden</span>
+<span class="nc" id="L93">    private boolean portalUsedCounted = false; //hidden</span>
+<span class="nc" id="L94">    private boolean studentCardObtained = false; //hidden</span>
+<span class="nc" id="L95">    private boolean wrongAnswerCounted = false; //negative</span>
+
+<span class="nc" id="L97">    private int correctAnswers = 0; //track how many exams the player answers correctly </span>
+
+    /**
+     * Instantiates a new Game Screen.
+     *
+     * @param game the game is passed in every time we create a new
+     *             screen in order to access the spritebatch
+     *
+     */
+
+<span class="nc" id="L107">    public GameScreen(final Main game){</span>
+<span class="nc" id="L108">        this.game = game;</span>
+
+<span class="nc" id="L110">        this.map = new TmxMapLoader().load(&quot;map/map.tmx&quot;);</span>
+<span class="nc" id="L111">        this.currentMapPath = &quot;map/map.tmx&quot;;</span>
+    
+<span class="nc" id="L113">        this.mapRenderer = new OrthogonalTiledMapRenderer(map, 1 / 16f);</span>
+
+<span class="nc" id="L115">        this.collisionObjects = map.getLayers().get(&quot;collisions&quot;).getObjects();</span>
+<span class="nc" id="L116">        this.objectObjects = map.getLayers().get(&quot;objects&quot;).getObjects();</span>
+<span class="nc" id="L117">        this.checkpointObjects = map.getLayers().get(&quot;checkpoints&quot;).getObjects();</span>
+<span class="nc" id="L118">        this.finishObjects = map.getLayers().get(&quot;finish&quot;).getObjects();</span>
+        
+<span class="nc" id="L120">        this.lockers = new ArrayList&lt;&gt;() {{</span>
+<span class="nc" id="L121">            add(new Locker(&quot;locker1&quot;));</span>
+<span class="nc" id="L122">            add(new Locker(&quot;locker2&quot;));</span>
+<span class="nc" id="L123">            add(new Locker(&quot;locker3&quot;));</span>
+<span class="nc" id="L124">            add(new Locker(&quot;locker4&quot;));</span>
+<span class="nc" id="L125">            add(new Locker(&quot;locker5&quot;));</span>
+<span class="nc" id="L126">            add(new Locker(&quot;locker6&quot;));</span>
+<span class="nc" id="L127">            add(new Locker(&quot;locker7&quot;));</span>
+            //add(new Locker(&quot;locker8&quot;));
+<span class="nc" id="L129">        }};</span>
+
+<span class="nc" id="L131">        this.inventory = new Inventory(3);</span>
+<span class="nc" id="L132">        this.inventoryFont = new BitmapFont();</span>
+<span class="nc" id="L133">        this.inventoryFont.getData().setScale(0.03f);</span>
+
+<span class="nc bnc" id="L135" title="All 2 branches missed.">        if (currentMapPath.equals(&quot;map/map.tmx&quot;)) {</span>
+<span class="nc" id="L136">            this.portal = new Portal(&quot;hiddenRoom&quot;, &quot;map/hiddenRoom.tmx&quot;);</span>
+<span class="nc" id="L137">            portal.setPosition(objectObjects);</span>
+        } else {
+<span class="nc" id="L139">            this.portal = new Portal(&quot;portal&quot;, &quot;map/map.tmx&quot;);</span>
+<span class="nc" id="L140">            portal.setPosition(objectObjects);</span>
+        }
+
+        //position lockers
+<span class="nc bnc" id="L144" title="All 2 branches missed.">        for (Locker locker : lockers) {</span>
+<span class="nc" id="L145">            locker.setPosition(objectObjects);</span>
+<span class="nc" id="L146">        }</span>
+
+<span class="nc" id="L148">        camera = new OrthographicCamera();</span>
+<span class="nc" id="L149">        camera.zoom = 0.5f;</span>
+<span class="nc" id="L150">        camera.setToOrtho(false, 16, 9);</span>
+
+<span class="nc" id="L152">        viewport = new FitViewport(16,9,camera);</span>
+
+<span class="nc" id="L154">        player = new Player();</span>
+<span class="nc" id="L155">        this.origninalPlayerSpeed = player.getSpeed(); //set the player's base speed</span>
+
+<span class="nc" id="L157">        guards = new ArrayList&lt;&gt;() {</span>
+            {
+                //(x, 44-y, direction, speed)
+                //rescale using * 1.5f which is 45/30 to fit the new 45x45 tiled map
+                //add(new Guard(14.5f *1.5f, 28.5f *1.5f, false, 0.5f));
+                //true = left/right &amp; false = up/down
+<span class="nc" id="L163">                add(new Guard(19f, 28f, true, 0.5f)); //by spawn</span>
+<span class="nc" id="L164">                add(new Guard(15f, 43f, false, 0.5f)); //top left</span>
+<span class="nc" id="L165">                add(new Guard(13f, 43f, false, 0.5f)); //top left</span>
+<span class="nc" id="L166">                add(new Guard(11f, 43f, false, 0.5f)); //top left</span>
+<span class="nc" id="L167">                add(new Guard(9f, 43f, false, 0.5f)); //top left</span>
+<span class="nc" id="L168">                add(new Guard(11f, 36f, false, 1.5f)); //below top left</span>
+<span class="nc" id="L169">                add(new Guard(15f, 36f, false, 1.5f)); //below top left</span>
+<span class="nc" id="L170">                add(new Guard(14f, 17f, false, 1f));//by exam7</span>
+<span class="nc" id="L171">                add(new Guard(17f, 17f, false, 1f));//by exam7</span>
+<span class="nc" id="L172">                add(new Guard(27f, 16f, true, 0.5f));//start of new map bit</span>
+<span class="nc" id="L173">                add(new Guard(4f, 5f, true, 1f));//bottom left</span>
+<span class="nc" id="L174">                add(new Guard(4f, 7f, true, 1f));//bottom left</span>
+<span class="nc" id="L175">                add(new Guard(21f, 12f, false, 1f));//by exam7</span>
+<span class="nc" id="L176">                add(new Guard(9f, 23f, true, 2f)); //below skinny passage </span>
+<span class="nc" id="L177">                add(new Guard(15f, 3f, true, 2f)); //bottom left flat bit</span>
+<span class="nc" id="L178">                add(new Guard(30f, 5f, false, 2f)); //classroom 1</span>
+<span class="nc" id="L179">                add(new Guard(32f, 5f, false, 2f)); //classroom 1</span>
+<span class="nc" id="L180">            }</span>
+        };
+
+<span class="nc" id="L183">        students = new ArrayList&lt;&gt;() {</span>
+            {
+<span class="nc" id="L185">                add(new Npc(&quot;npc1&quot;, &quot;npc/npc1.png&quot;, &quot;Hey there! Don't forget the\n door keycode like me...\nI'm sure it had a 3 in it&quot;));</span>
+<span class="nc" id="L186">                add(new Npc(&quot;npc2&quot;, &quot;npc/npc2.png&quot;,&quot;Have you seen the door\nhas been locked again?\nAll I know is it started with a 7&quot;)); </span>
+<span class="nc" id="L187">                add(new Npc(&quot;npc3&quot;, &quot;npc/npc3.png&quot;, &quot;Could you help me?\nI've forgotten the door code \nI can only remember the number 9&quot;));</span>
+<span class="nc" id="L188">                add(new Npc(&quot;npc4&quot;, &quot;npc/npc4.png&quot;, &quot;You'll never figure out how to escape!&quot;)); //dean in the hidden room</span>
+<span class="nc" id="L189">            }</span>
+        };
+
+<span class="nc bnc" id="L192" title="All 2 branches missed.">        for (Npc student : students) {</span>
+<span class="nc" id="L193">            student.setPosition(objectObjects);</span>
+<span class="nc" id="L194">        }</span>
+
+<span class="nc" id="L196">        exams = new ArrayList&lt;&gt;(){</span>
+            {
+<span class="nc" id="L198">                add(new Exam(&quot;exam1&quot;, &quot;What is 1 + 2?&quot;, &quot;3&quot;));</span>
+<span class="nc" id="L199">                add(new Exam(&quot;exam2&quot;, &quot;What is 7 x 6?&quot;, &quot;42&quot;));</span>
+<span class="nc" id="L200">                add(new Exam(&quot;exam3&quot;, &quot;What is the capital of Germany?&quot;, &quot;Berlin&quot;));</span>
+<span class="nc" id="L201">                add(new Exam(&quot;exam4&quot;, &quot;What planet is known as the red planet?&quot;, &quot;Mars&quot;));</span>
+<span class="nc" id="L202">                add(new Exam(&quot;exam5&quot;, &quot;What year did World War II end?&quot;, &quot;1945&quot;));</span>
+<span class="nc" id="L203">                add(new Exam(&quot;exam6&quot;, &quot;What is the chemical symbol for gold?&quot;, &quot;Au&quot;));</span>
+<span class="nc" id="L204">                add(new Exam(&quot;exam7&quot;, &quot;What is the main gas that makes up the\nEarth's atmosphere?&quot;, &quot;Nitrogen&quot;));</span>
+<span class="nc" id="L205">                add(new Exam(&quot;exam8&quot;, &quot;How many continents are there?&quot;, &quot;7&quot;));</span>
+<span class="nc" id="L206">                add(new Exam(&quot;exam9&quot;, &quot;What is the currency of Japan?&quot;, &quot;yen&quot;));</span>
+<span class="nc" id="L207">                add(new Exam(&quot;exam10&quot;, &quot;What is the denary number 10 in binary?&quot;, &quot;1010&quot;));</span>
+<span class="nc" id="L208">            }</span>
+        };
+
+<span class="nc bnc" id="L211" title="All 2 branches missed.">        for (Exam exam: exams) {</span>
+<span class="nc" id="L212">            exam.setPosition(objectObjects);</span>
+<span class="nc" id="L213">        }</span>
+
+<span class="nc" id="L215">        this.keypads = new ArrayList&lt;&gt; () {{</span>
+<span class="nc" id="L216">            add(new Keypad(&quot;keypad&quot;));</span>
+<span class="nc" id="L217">        }};</span>
+
+        //position keypad from object layer
+<span class="nc bnc" id="L220" title="All 2 branches missed.">        for (Keypad keypad : keypads) {</span>
+<span class="nc" id="L221">            keypad.setPosition(objectObjects);</span>
+<span class="nc" id="L222">        }</span>
+
+
+<span class="nc" id="L225">        completedExamNames = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L226">        completedExamNames.clear();</span>
+
+<span class="nc" id="L228">        score = 0;</span>
+
+<span class="nc" id="L230">        hudCamera = new OrthographicCamera();</span>
+<span class="nc" id="L231">        hudCamera.setToOrtho(false, 16, 9);</span>
+<span class="nc" id="L232">        hudViewport = new FitViewport(16,9,hudCamera);</span>
+<span class="nc" id="L233">        font = new BitmapFont();</span>
+<span class="nc" id="L234">        font.setUseIntegerPositions(false);</span>
+<span class="nc" id="L235">        font.getData().setScale(0.03f);</span>
+
+<span class="nc" id="L237">        timeLeft = 300f;</span>
+
+<span class="nc" id="L239">    }</span>
+
+    public void unPause(){
+<span class="nc" id="L242">        this.isPaused = false;</span>
+<span class="nc" id="L243">    }</span>
+
+    @Override
+    public void pause(){
+<span class="nc" id="L247">        this.isPaused = true;</span>
+<span class="nc" id="L248">    }</span>
+
+    public int getScore(){
+<span class="nc" id="L251">        return this.score;</span>
+    }
+
+    @Override
+    public void show(){
+
+<span class="nc" id="L257">    }</span>
+
+    /**
+     * Sets the screen's new width and height.
+     *
+     * @param width
+     * @param height
+     */
+    @Override
+    public void resize(int width, int height) {
+<span class="nc" id="L267">        viewport.update(width, height, true);</span>
+<span class="nc" id="L268">        hudViewport.update(width, height, true);</span>
+<span class="nc" id="L269">    }</span>
+
+    @Override
+    public void resume() {
+
+<span class="nc" id="L274">    }</span>
+
+    @Override
+    public void hide() {
+
+<span class="nc" id="L279">    }</span>
+
+    /**
+     * @param delta the delta time
+     */
+    @Override
+    public void render(float delta) {
+<span class="nc" id="L286">        delta = Math.min(delta, 1 / 30f);</span>
+        // Press ESC to pause
+<span class="nc bnc" id="L288" title="All 2 branches missed.">        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {</span>
+<span class="nc" id="L289">            this.pause();</span>
+<span class="nc" id="L290">            game.setScreen(new PauseScreen(game, this)); // pass current screen</span>
+<span class="nc" id="L291">            return; // don’t update game logic this frame</span>
+        }
+
+<span class="nc" id="L294">        input(delta);</span>
+<span class="nc" id="L295">        logic(delta);</span>
+<span class="nc" id="L296">        draw();</span>
+<span class="nc" id="L297">    }</span>
+    /**
+     * Determines what actions to perform on a given input from the player.
+     * &lt;p&gt;
+     * Mainly handles player movement, but additionally interaction with {@link io.maze.objects.Exam exams}.
+     */
+    private void input(float delta) {
+
+<span class="nc bnc" id="L305" title="All 2 branches missed.">        if (Gdx.input.isKeyPressed(Input.Keys.W)) {</span>
+            // Set the player's velocity
+            // Set the sprite corresponding to the direction of key press down
+<span class="nc" id="L308">            player.setActiveSprite(player.getBackSprite());</span>
+<span class="nc" id="L309">            player.setDeltaY(player.getSpeed() * delta);</span>
+<span class="nc" id="L310">            player.setDeltaX(0);</span>
+
+<span class="nc bnc" id="L312" title="All 2 branches missed.">            if (!CollisionChecker.isColliding(player, collisionObjects, completedExamNames)) {</span>
+<span class="nc" id="L313">                player.getActiveSprite().translateY(player.getDeltaY());</span>
+            }
+        }
+
+<span class="nc bnc" id="L317" title="All 2 branches missed.">        if (Gdx.input.isKeyPressed(Input.Keys.S)) {</span>
+<span class="nc" id="L318">            player.setActiveSprite(player.getFrontSprite());</span>
+<span class="nc" id="L319">            player.setDeltaY(-player.getSpeed() * delta);</span>
+<span class="nc" id="L320">            player.setDeltaX(0);</span>
+
+<span class="nc bnc" id="L322" title="All 2 branches missed.">            if (!CollisionChecker.isColliding(player, collisionObjects, completedExamNames)) {</span>
+<span class="nc" id="L323">                player.getActiveSprite().translateY(player.getDeltaY());</span>
+            }
+        }
+
+<span class="nc bnc" id="L327" title="All 2 branches missed.">        if (Gdx.input.isKeyPressed(Input.Keys.A)) {</span>
+<span class="nc" id="L328">            player.setActiveSprite(player.getLeftSprite());</span>
+<span class="nc" id="L329">            player.setDeltaX(-player.getSpeed() * delta);</span>
+<span class="nc" id="L330">            player.setDeltaY(0);</span>
+
+<span class="nc bnc" id="L332" title="All 2 branches missed.">            if (!CollisionChecker.isColliding(player, collisionObjects, completedExamNames)) {</span>
+<span class="nc" id="L333">                player.getActiveSprite().translateX(player.getDeltaX());</span>
+            }
+
+        }
+
+<span class="nc bnc" id="L338" title="All 2 branches missed.">        if (Gdx.input.isKeyPressed(Input.Keys.D)) {</span>
+<span class="nc" id="L339">            player.setActiveSprite(player.getRightSprite());</span>
+<span class="nc" id="L340">            player.setDeltaX(player.getSpeed() * delta);</span>
+<span class="nc" id="L341">            player.setDeltaY(0);</span>
+
+<span class="nc bnc" id="L343" title="All 2 branches missed.">            if (!CollisionChecker.isColliding(player, collisionObjects, completedExamNames)) {</span>
+<span class="nc" id="L344">                player.getActiveSprite().translateX(player.getDeltaX());</span>
+            }
+        }
+
+        //inventory item usage with the number keys 1-3
+<span class="nc bnc" id="L349" title="All 2 branches missed.">        if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {</span>
+<span class="nc" id="L350">            int usedItem = inventory.useItem(0);</span>
+<span class="nc bnc" id="L351" title="All 2 branches missed.">            if (usedItem != InventoryItem.EMPTY) {</span>
+<span class="nc" id="L352">                applyItemEffect(usedItem);</span>
+            }
+        }
+
+<span class="nc bnc" id="L356" title="All 2 branches missed.">        if (Gdx.input.isKeyPressed(Input.Keys.NUM_2)) {</span>
+<span class="nc" id="L357">            int usedItem = inventory.useItem(1);</span>
+<span class="nc bnc" id="L358" title="All 2 branches missed.">            if (usedItem != InventoryItem.EMPTY) {</span>
+<span class="nc" id="L359">                applyItemEffect(usedItem);</span>
+            }
+        }
+
+<span class="nc bnc" id="L363" title="All 2 branches missed.">        if (Gdx.input.isKeyPressed(Input.Keys.NUM_3)) {</span>
+<span class="nc" id="L364">            int usedItem = inventory.useItem(2);</span>
+<span class="nc bnc" id="L365" title="All 2 branches missed.">            if (usedItem != InventoryItem.EMPTY) {</span>
+<span class="nc" id="L366">                applyItemEffect(usedItem);</span>
+            }
+        }
+
+
+<span class="nc bnc" id="L371" title="All 2 branches missed.">        if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {</span>
+<span class="nc bnc" id="L372" title="All 2 branches missed.">            for (Exam exam: exams) {</span>
+<span class="nc bnc" id="L373" title="All 4 branches missed.">                if (CollisionChecker.isColliding(player, exam) &amp;&amp; !exam.isCompleted()) {</span>
+                    //pause gameScreen and show the exam screen
+<span class="nc" id="L375">                    this.pause();</span>
+<span class="nc" id="L376">                    game.setScreen(new ExamQuestionScreen(game, this, exam.getQuestion(), exam.getCorrectAnswer()));</span>
+                    //mark the exam cas completed only after the player has answered the question
+<span class="nc" id="L378">                    exam.setCompleted();</span>
+<span class="nc" id="L379">                    score+=100;</span>
+<span class="nc" id="L380">                    completedExamNames.add(exam.getName());</span>
+
+<span class="nc bnc" id="L382" title="All 2 branches missed.">                    if (!examInteractionCounted) {</span>
+<span class="nc" id="L383">                        examInteractionCounted = true;</span>
+                    }
+                    break; //only handle one exam at a time 
+                }
+<span class="nc" id="L387">            }</span>
+            //handling locker interaction event
+           
+<span class="nc bnc" id="L390" title="All 2 branches missed.">            for (Locker locker: lockers) {</span>
+<span class="nc bnc" id="L391" title="All 4 branches missed.">                if (CollisionChecker.isColliding(player, locker) &amp;&amp; !locker.isOpened()) {</span>
+                    //if the locker hasn't already been opened and the player is colliding with it then gain an item in inventory
+<span class="nc" id="L393">                    int item = locker.open();</span>
+<span class="nc bnc" id="L394" title="All 2 branches missed.">                    if (item != InventoryItem.EMPTY) {</span>
+<span class="nc" id="L395">                        inventory.addItem(item);</span>
+<span class="nc bnc" id="L396" title="All 4 branches missed.">                        if (item == InventoryItem.STUDENT_CARD &amp;&amp; !studentCardObtained) {</span>
+<span class="nc" id="L397">                            studentCardObtained = true;</span>
+                        }
+                    }
+                    //only count the first locker opened in the hidden events tracker
+<span class="nc bnc" id="L401" title="All 2 branches missed.">                    if (!firstLockerCounted) {</span>
+<span class="nc" id="L402">                        firstLockerCounted = true;</span>
+                    }
+                }
+<span class="nc" id="L405">            }</span>
+            //keypad interaction event
+<span class="nc bnc" id="L407" title="All 2 branches missed.">            for (Keypad keypad : keypads) {</span>
+<span class="nc bnc" id="L408" title="All 4 branches missed.">                if (CollisionChecker.isColliding(player, keypad) &amp;&amp; !keypad.isActivated()) {</span>
+<span class="nc" id="L409">                    game.setScreen(new io.maze.screens.KeypadScreen(game, this));</span>
+<span class="nc" id="L410">                    this.pause();</span>
+<span class="nc" id="L411">                    break;</span>
+                }
+<span class="nc" id="L413">            }</span>
+            //all NPC interaction is handled in the logic method by using update()
+        }
+
+<span class="nc bnc" id="L417" title="All 2 branches missed.">        if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {</span>
+<span class="nc bnc" id="L418" title="All 4 branches missed.">            if (CollisionChecker.isColliding(player, portal) &amp;&amp; !portal.isActivated()) {</span>
+
+                //check if the player has obtained the student card when trying to leave
+<span class="nc bnc" id="L421" title="All 2 branches missed.">                if (currentMapPath.equals(&quot;map/hiddenRoom.tmx&quot;)) {</span>
+<span class="nc bnc" id="L422" title="All 2 branches missed.">                    if (!hasStudentCard()) {</span>
+                        //the student can't leave
+<span class="nc" id="L424">                        return; //don't proceed with the teleportation</span>
+                    }
+                }
+
+<span class="nc" id="L428">                portal.setActivated(true);</span>
+
+                
+                //only count the first portal usage in the hidden events tracker
+<span class="nc bnc" id="L432" title="All 2 branches missed.">                if (!portalUsedCounted) {</span>
+<span class="nc" id="L433">                    portalUsedCounted = true;</span>
+                }
+
+                //two-wap teleportation handling
+<span class="nc bnc" id="L437" title="All 2 branches missed.">                if (currentMapPath.equals(&quot;map/map.tmx&quot;)){</span>
+<span class="nc" id="L438">                    loadNewMap(&quot;map/hiddenRoom.tmx&quot;); //main map to hidden room</span>
+                } else {
+<span class="nc" id="L440">                    loadNewMap(&quot;map/map.tmx&quot;); //hidden room to main map</span>
+                }
+                
+            }
+        }
+
+<span class="nc" id="L446">    }</span>
+
+    /**
+     * Handles the various events that occur throughout the game such as:
+     * &lt;ul&gt;
+     * &lt;li&gt; checkpoints
+     * &lt;li&gt; guard movement
+     * &lt;li&gt; timer
+     * &lt;li&gt; game completion
+     * &lt;li&gt; game failure
+     * &lt;/ul&gt;
+     */
+    private void logic(float delta) {
+        //update immunity timer
+<span class="nc bnc" id="L460" title="All 2 branches missed.">        if (hasImmunity) {</span>
+<span class="nc" id="L461">            immunityTimer -= delta;</span>
+<span class="nc bnc" id="L462" title="All 2 branches missed.">            if (immunityTimer &lt;= 0) {</span>
+<span class="nc" id="L463">                hasImmunity = false;</span>
+            }
+        }
+
+        //update guard speed timer
+<span class="nc bnc" id="L468" title="All 2 branches missed.">        if (guardsSpedUp) {</span>
+<span class="nc" id="L469">            guardSpeedTimer -= delta;</span>
+<span class="nc bnc" id="L470" title="All 2 branches missed.">            if (guardSpeedTimer &lt;= 0) {</span>
+<span class="nc" id="L471">                guardsSpedUp = false;</span>
+<span class="nc" id="L472">                guardSpeedMultiplier = 1f; //reset to normal</span>
+            }
+        }
+        
+        //update speed boost timer
+<span class="nc bnc" id="L477" title="All 4 branches missed.">        if (hasSpeedBoost || hasSpeedReduction) {</span>
+<span class="nc" id="L478">            speedBoostTimer -= delta;</span>
+<span class="nc bnc" id="L479" title="All 2 branches missed.">            if (speedBoostTimer &lt;= 0) {</span>
+<span class="nc" id="L480">                player.setSpeed(origninalPlayerSpeed);</span>
+<span class="nc" id="L481">                hasSpeedBoost = false;</span>
+<span class="nc" id="L482">                hasSpeedReduction = false;</span>
+            }
+        }
+
+<span class="nc bnc" id="L486" title="All 2 branches missed.">        if (CollisionChecker.isColliding(player, checkpointObjects)) {</span>
+<span class="nc" id="L487">            player.setSpawnPoint(player.getX(), player.getY());</span>
+        }
+
+<span class="nc bnc" id="L490" title="All 2 branches missed.">        if (CollisionChecker.isColliding(player, finishObjects)) {</span>
+<span class="nc" id="L491">            score += (int)timeLeft;</span>
+            //work out if all 11 events have been interacted with for win screen achievements, add 20 points if so
+<span class="nc" id="L493">            int totalEvents = 0;</span>
+<span class="nc bnc" id="L494" title="All 2 branches missed.">            if (guardCollisionCounted) totalEvents ++;</span>
+<span class="nc bnc" id="L495" title="All 2 branches missed.">            if (rottenAppleCounted) totalEvents ++;</span>
+<span class="nc bnc" id="L496" title="All 2 branches missed.">            if (doorUnlockedCounted) totalEvents ++;</span>
+<span class="nc bnc" id="L497" title="All 2 branches missed.">            if (npc4InteractionCounted) totalEvents ++;</span>
+<span class="nc bnc" id="L498" title="All 2 branches missed.">            if (wrongAnswerCounted) totalEvents ++;</span>
+<span class="nc bnc" id="L499" title="All 2 branches missed.">            if (firstLockerCounted) totalEvents ++;</span>
+<span class="nc bnc" id="L500" title="All 2 branches missed.">            if (portalUsedCounted) totalEvents ++;</span>
+<span class="nc bnc" id="L501" title="All 2 branches missed.">            if (studentCardObtained) totalEvents ++;</span>
+<span class="nc bnc" id="L502" title="All 2 branches missed.">            if (examInteractionCounted) totalEvents ++;</span>
+<span class="nc bnc" id="L503" title="All 2 branches missed.">            if (appleInteractionCounted) totalEvents ++;</span>
+<span class="nc bnc" id="L504" title="All 2 branches missed.">            if (cookieInteractionCounted) totalEvents ++;</span>
+
+<span class="nc bnc" id="L506" title="All 2 branches missed.">            if (totalEvents == 11) {</span>
+<span class="nc" id="L507">                score += 20;</span>
+            }
+
+            //if the player answered all exams correctly they get a bonus 50 points
+<span class="nc bnc" id="L511" title="All 2 branches missed.">            if (correctAnswers == 10) {</span>
+<span class="nc" id="L512">                score += 50;</span>
+            }
+
+            //if the player completed the game in under three minutes they get a bonus 20 marks
+<span class="nc bnc" id="L516" title="All 2 branches missed.">            if ((int)timeLeft &gt;= 120) {</span>
+<span class="nc" id="L517">                score += 20;</span>
+            }
+
+<span class="nc" id="L520">            game.setScreen(new WinScreen(game, this, correctAnswers, totalEvents));</span>
+        }
+
+<span class="nc bnc" id="L523" title="All 2 branches missed.">        for (Guard guard : guards) {</span>
+<span class="nc bnc" id="L524" title="All 4 branches missed.">            if (CollisionChecker.isColliding(player, guard)&amp;&amp; !hasImmunity) {</span>
+<span class="nc" id="L525">                player.respawn();</span>
+<span class="nc" id="L526">                score-=10; //redice score by 10 each time the player is caught by a guard</span>
+
+                //only count the first collision with a guard on the negative event tracker
+<span class="nc bnc" id="L529" title="All 2 branches missed.">                if (!guardCollisionCounted) {</span>
+<span class="nc" id="L530">                    guardCollisionCounted = true;</span>
+                }
+            }
+<span class="nc" id="L533">        }</span>
+        // NPC guard movement
+        // true if moving up, false if moving down
+<span class="nc bnc" id="L536" title="All 2 branches missed.">        for (Guard guard : guards) {</span>
+<span class="nc bnc" id="L537" title="All 2 branches missed.">            if (guard.isMovingHorizontally()) {</span>
+<span class="nc bnc" id="L538" title="All 2 branches missed.">                if (guard.getSpeed() &lt; 0) {</span>
+<span class="nc" id="L539">                    guard.setActiveSprite(guard.getLeftSprite());</span>
+                } else {
+<span class="nc" id="L541">                    guard.setActiveSprite(guard.getRightSprite());</span>
+                }
+
+<span class="nc" id="L544">                guard.setDeltaX(guard.getSpeed() * guardSpeedMultiplier * delta);</span>
+<span class="nc" id="L545">                guard.setDeltaY(0);</span>
+<span class="nc" id="L546">                guard.getActiveSprite().translateX(guard.getDeltaX());</span>
+
+            } else {
+<span class="nc bnc" id="L549" title="All 2 branches missed.">                if (guard.getSpeed() &lt; 0) {</span>
+<span class="nc" id="L550">                    guard.setActiveSprite(guard.getFrontSprite());</span>
+                } else {
+<span class="nc" id="L552">                    guard.setActiveSprite(guard.getBackSprite());</span>
+                }
+
+<span class="nc" id="L555">                guard.setDeltaY(guard.getSpeed() * guardSpeedMultiplier * delta);</span>
+<span class="nc" id="L556">                guard.setDeltaX(0);</span>
+<span class="nc" id="L557">                guard.getActiveSprite().translateY(guard.getDeltaY());</span>
+
+            }
+<span class="nc bnc" id="L560" title="All 2 branches missed.">            if (CollisionChecker.isColliding(guard, collisionObjects)){</span>
+<span class="nc" id="L561">                guard.setSpeed(-guard.getSpeed());</span>
+            }
+<span class="nc" id="L563">        }</span>
+
+        //Handle NPC dialogue
+<span class="nc bnc" id="L566" title="All 2 branches missed.">        for (Npc student : students) {</span>
+<span class="nc" id="L567">            student.update(player);</span>
+<span class="nc bnc" id="L568" title="All 2 branches missed.">            if (student.getName().equals(&quot;npc4&quot;)) {</span>
+                //if the player is close to npc4 and just pressed E
+<span class="nc" id="L570">                float distanceX = Math.abs(player.getX() - student.getSprite().getX());</span>
+<span class="nc" id="L571">                float distanceY = Math.abs(player.getY() - student.getSprite().getY());</span>
+<span class="nc" id="L572">                float distance = (float) Math.sqrt(distanceX * distanceX + distanceY * distanceY);</span>
+
+<span class="nc bnc" id="L574" title="All 4 branches missed.">                if (distance &lt; 2f &amp;&amp; Gdx.input.isKeyJustPressed(Input.Keys.E)) {</span>
+                    //only count the first interaction with the dean as a negative event
+<span class="nc bnc" id="L576" title="All 2 branches missed.">                    if (!npc4InteractionCounted) {</span>
+<span class="nc" id="L577">                        npc4InteractionCounted = true;</span>
+                    }
+                }
+            }
+<span class="nc" id="L581">        }</span>
+
+        //auto-updating
+<span class="nc bnc" id="L584" title="All 2 branches missed.">        if (timeLeft &gt; 0) {</span>
+<span class="nc" id="L585">            timeLeft -= delta;</span>
+        }
+        else {
+<span class="nc" id="L588">            game.setScreen(new GameOverScreen(game));</span>
+        }
+
+<span class="nc" id="L591">    }</span>
+
+    /** Draws map, text, characters and objects to screen. Additionally, updates camera movement.*/
+    private void draw() {
+<span class="nc" id="L595">        ScreenUtils.clear(Color.BLACK);</span>
+
+        //first draw the game world
+<span class="nc" id="L598">        mapRenderer.setView(camera);</span>
+<span class="nc" id="L599">        mapRenderer.render();</span>
+
+<span class="nc" id="L601">        viewport.getCamera().position.set(player.getCenterX(), player.getCenterY(), 0);</span>
+<span class="nc" id="L602">        viewport.getCamera().update();</span>
+
+<span class="nc" id="L604">        viewport.apply();</span>
+<span class="nc" id="L605">        game.getBatch().setProjectionMatrix(viewport.getCamera().combined);</span>
+
+<span class="nc" id="L607">        player.setX(player.getActiveSprite().getX());</span>
+<span class="nc" id="L608">        player.setY(player.getActiveSprite().getY());</span>
+
+<span class="nc" id="L610">        game.getBatch().begin();</span>
+
+<span class="nc" id="L612">        player.updateSpritePositions();</span>
+
+<span class="nc" id="L614">        player.getActiveSprite().draw(game.getBatch());</span>
+
+        //check which map the game is currently on before drawing objects
+<span class="nc bnc" id="L617" title="All 2 branches missed.">        if (currentMapPath.equals(&quot;map/map.tmx&quot;)) {</span>
+<span class="nc bnc" id="L618" title="All 2 branches missed.">            for (Guard guard : guards) {</span>
+<span class="nc" id="L619">                guard.setX(guard.getActiveSprite().getX());</span>
+<span class="nc" id="L620">                guard.setY(guard.getActiveSprite().getY());</span>
+<span class="nc" id="L621">                guard.updateSpritePositions();</span>
+<span class="nc" id="L622">                guard.getActiveSprite().draw(game.getBatch());</span>
+<span class="nc" id="L623">            }</span>
+            
+            //draw NPC students
+<span class="nc bnc" id="L626" title="All 2 branches missed.">            for (Npc student : students) {</span>
+                //draw all npcs accept npc4
+<span class="nc bnc" id="L628" title="All 2 branches missed.">                if (!student.getName().equals(&quot;npc4&quot;)){</span>
+<span class="nc" id="L629">                    student.getSprite().draw(game.getBatch());</span>
+                }
+                //draw the dialogue above NPC's head
+<span class="nc" id="L632">                student.renderDialogue(game.getBatch());</span>
+<span class="nc" id="L633">            }</span>
+
+<span class="nc bnc" id="L635" title="All 2 branches missed.">            for (Exam exam: exams){</span>
+<span class="nc" id="L636">                exam.getSprite().draw(game.getBatch());</span>
+<span class="nc" id="L637">            }</span>
+
+            //for (Locker locker : lockers) {
+                //if (!locker.getName().equals(&quot;locker8&quot;)) {
+                    //locker.getSprite().draw(game.getBatch());
+                //}
+            //}
+
+<span class="nc bnc" id="L645" title="All 2 branches missed.">        } else if (currentMapPath.equals(&quot;map/hiddenRoom.tmx&quot;)) {</span>
+<span class="nc bnc" id="L646" title="All 2 branches missed.">            for (Npc student : students) {</span>
+                //only draw npc4
+<span class="nc bnc" id="L648" title="All 2 branches missed.">                if (student.getName().equals(&quot;npc4&quot;)) {</span>
+<span class="nc" id="L649">                    student.getSprite().draw(game.getBatch());</span>
+<span class="nc" id="L650">                    student.renderDialogue(game.getBatch());</span>
+                }
+<span class="nc" id="L652">            }</span>
+
+            //draw locker 8 -&gt; need to fix the sizing but low piority task
+            //for (Locker locker : lockers) {
+                //if (locker.getName().equals(&quot;locker8&quot;)) {
+                    //locker.getSprite().draw(game.getBatch());
+                //}
+            //}
+        }
+
+<span class="nc" id="L662">        game.getBatch().end();</span>
+
+        //draw HUD elements last (on top of everything else)
+<span class="nc" id="L665">        hudViewport.apply();</span>
+<span class="nc" id="L666">        game.getBatch().setProjectionMatrix(hudCamera.combined);</span>
+<span class="nc" id="L667">        game.getBatch().begin();</span>
+
+<span class="nc" id="L669">        long minutes = (long) Math.floor(this.timeLeft / 60) ;</span>
+<span class="nc" id="L670">		long seconds = (long) Math.floor(this.timeLeft) - (minutes * 60);</span>
+
+<span class="nc" id="L672">        font.draw(game.getBatch(), &quot;Time Left: &quot; + String.format(&quot;%02d : %02d&quot;, minutes, seconds), 12f, 8f);</span>
+        
+        //calculate positive events encountered
+<span class="nc" id="L675">        int totalPositiveEvents = 0;</span>
+<span class="nc bnc" id="L676" title="All 2 branches missed.">        if (examInteractionCounted) totalPositiveEvents ++;</span>
+<span class="nc bnc" id="L677" title="All 2 branches missed.">        if (appleInteractionCounted) totalPositiveEvents ++;</span>
+<span class="nc bnc" id="L678" title="All 2 branches missed.">        if (cookieInteractionCounted) totalPositiveEvents ++;</span>
+<span class="nc" id="L679">        font.draw(game.getBatch(),  &quot;Positive Events: &quot; + totalPositiveEvents, 1f, 8f);</span>
+        //calculate negative events encountered
+<span class="nc" id="L681">        int totalNegativeEvents = 0;</span>
+<span class="nc bnc" id="L682" title="All 2 branches missed.">        if (guardCollisionCounted) totalNegativeEvents ++;</span>
+<span class="nc bnc" id="L683" title="All 2 branches missed.">        if (rottenAppleCounted) totalNegativeEvents ++;</span>
+<span class="nc bnc" id="L684" title="All 2 branches missed.">        if (doorUnlockedCounted) totalNegativeEvents ++;</span>
+<span class="nc bnc" id="L685" title="All 2 branches missed.">        if (npc4InteractionCounted) totalNegativeEvents ++;</span>
+<span class="nc bnc" id="L686" title="All 2 branches missed.">        if (wrongAnswerCounted) totalNegativeEvents ++;</span>
+<span class="nc" id="L687">        font.draw(game.getBatch(),  &quot;Negative Events: &quot; + totalNegativeEvents, 1f, 7.5f);</span>
+        //calculate hidden events encountered
+<span class="nc" id="L689">        int totalHiddenEvents = 0;</span>
+<span class="nc bnc" id="L690" title="All 2 branches missed.">        if (firstLockerCounted) totalHiddenEvents ++;</span>
+<span class="nc bnc" id="L691" title="All 2 branches missed.">        if (portalUsedCounted) totalHiddenEvents ++;</span>
+<span class="nc bnc" id="L692" title="All 2 branches missed.">        if (studentCardObtained) totalHiddenEvents ++;</span>
+<span class="nc" id="L693">        font.draw(game.getBatch(),  &quot;Hidden Events: &quot; + totalHiddenEvents, 1f, 7f);</span>
+        
+        //draw inventory
+<span class="nc bnc" id="L696" title="All 2 branches missed.">        for (int i = 0; i &lt; inventory.getSlots().size(); i++) {</span>
+<span class="nc" id="L697">            float xPos = 6.8f + i * 1f; //position each slot 1 unit apart</span>
+<span class="nc" id="L698">            float slotSize = 0.8f; //the size of each inventory slot</span>
+
+            //draw the white slot background first
+
+            //draw the item texture using the same size as the slot size to rescale it
+<span class="nc" id="L703">            game.getBatch().draw(inventory.getSlots().get(i).getTexture(), xPos, 1f, slotSize, slotSize);</span>
+            
+            //draw slot numbers
+<span class="nc" id="L706">            inventoryFont.draw(game.getBatch(), String.valueOf(i+1), xPos + 0.1f, 1.7f);</span>
+        }
+<span class="nc" id="L708">        game.getBatch().end();</span>
+<span class="nc" id="L709">    }</span>
+
+    @Override
+    public void dispose() {
+<span class="nc" id="L713">        player.dispose();</span>
+<span class="nc" id="L714">        map.dispose();</span>
+<span class="nc" id="L715">        mapRenderer.dispose();</span>
+<span class="nc bnc" id="L716" title="All 2 branches missed.">        for (Guard guard : guards) {</span>
+<span class="nc" id="L717">            guard.dispose();</span>
+<span class="nc" id="L718">        }</span>
+<span class="nc bnc" id="L719" title="All 2 branches missed.">        for (Npc student : students) {</span>
+            //dispose of the NPCs
+<span class="nc" id="L721">            student.dispose();</span>
+<span class="nc" id="L722">        }</span>
+<span class="nc bnc" id="L723" title="All 2 branches missed.">        for (Exam exam: exams){</span>
+<span class="nc" id="L724">            exam.dispose();</span>
+<span class="nc" id="L725">        }</span>
+<span class="nc bnc" id="L726" title="All 2 branches missed.">        if (portal != null) {</span>
+<span class="nc" id="L727">            portal.dispose();</span>
+        }
+<span class="nc" id="L729">        font.dispose();</span>
+<span class="nc" id="L730">    }</span>
+
+    public void unlockDoor() {
+        //add the locked door to completedExamNames to remove its collision
+<span class="nc" id="L734">        completedExamNames.add(&quot;lockedDoor&quot;);</span>
+
+        //the door being locked is a negative event so it must be tracked
+<span class="nc bnc" id="L737" title="All 2 branches missed.">        if (!doorUnlockedCounted) {</span>
+<span class="nc" id="L738">            doorUnlockedCounted = true; </span>
+        }
+<span class="nc" id="L740">    }</span>
+
+    private void applyItemEffect(int itemType) {
+<span class="nc bnc" id="L743" title="All 4 branches missed.">        switch (itemType) {</span>
+            case InventoryItem.APPLE:
+                //increase the player's speed temporarily
+<span class="nc" id="L746">                hasSpeedBoost = true;</span>
+<span class="nc" id="L747">                speedBoostTimer = 10f; //speed boost for 10 seconds</span>
+<span class="nc" id="L748">                player.setSpeed(player.getSpeed() + 2f);</span>
+                //only count the first apple interaction in the positive events tracker
+<span class="nc bnc" id="L750" title="All 2 branches missed.">                if (!appleInteractionCounted) {</span>
+<span class="nc" id="L751">                    appleInteractionCounted = true;</span>
+                }
+                break;
+            case InventoryItem.COOKIE:
+                //EXAMPLE -&gt; give the player some time back, 15 seconds
+<span class="nc" id="L756">                timeLeft += 15f;</span>
+                //only count the first cookie interaction in the positive events tracker
+<span class="nc bnc" id="L758" title="All 2 branches missed.">                if (!cookieInteractionCounted) {</span>
+<span class="nc" id="L759">                    cookieInteractionCounted = true;</span>
+                }
+                break;
+            case InventoryItem.BAD_APPLE:
+<span class="nc" id="L763">                hasSpeedBoost = false;</span>
+<span class="nc" id="L764">                hasSpeedReduction = true;</span>
+<span class="nc" id="L765">                speedBoostTimer = 10f; //used as a speed change timer not just for boost</span>
+<span class="nc" id="L766">                player.setSpeed(player.getSpeed() - 2f);</span>
+                //only count the first rotten apple interaction in the negative events tracker
+<span class="nc bnc" id="L768" title="All 2 branches missed.">                if (!rottenAppleCounted) {</span>
+<span class="nc" id="L769">                    rottenAppleCounted = true;</span>
+                }
+                break;
+            case InventoryItem.STUDENT_CARD:
+                //add any active effect here
+        }
+<span class="nc" id="L775">    }</span>
+
+    private void loadNewMap(String mapPath) {
+        //dispose of the current map's resources
+<span class="nc" id="L779">        map.dispose();</span>
+<span class="nc" id="L780">        mapRenderer.dispose();</span>
+<span class="nc" id="L781">        lockers.clear();</span>
+
+        //load new map
+<span class="nc" id="L784">        TiledMap newMap = new TmxMapLoader().load(mapPath);</span>
+
+        //update the map and mapRenderer references to use the new map
+<span class="nc" id="L787">        this.map = newMap;</span>
+<span class="nc" id="L788">        this.mapRenderer = new OrthogonalTiledMapRenderer(map, 1/16f);</span>
+<span class="nc" id="L789">        this.currentMapPath = mapPath; //track that the current map is now the hidden room</span>
+
+        //update the maps renderer's view to match the current camera
+<span class="nc" id="L792">        mapRenderer.setView(camera);</span>
+
+        //update the viewport and camera
+<span class="nc" id="L795">        viewport.getCamera().update();</span>
+<span class="nc" id="L796">        viewport.apply(true);</span>
+
+        //force a render update -&gt; trying to fix black screen issue
+<span class="nc" id="L799">        camera.update();</span>
+        
+        //update the object layers for the new map
+<span class="nc" id="L802">        this.collisionObjects = map.getLayers().get(&quot;collisions&quot;).getObjects();</span>
+<span class="nc" id="L803">        this.objectObjects = map.getLayers().get(&quot;objects&quot;).getObjects();</span>
+<span class="nc" id="L804">        this.checkpointObjects = map.getLayers().get(&quot;checkpoints&quot;).getObjects();</span>
+<span class="nc" id="L805">        this.finishObjects = map.getLayers().get(&quot;finish&quot;).getObjects();</span>
+
+        //clear objects from previous map so they don't get overlayed onto the new map
+        //guards.clear();
+        //exams.clear();
+
+<span class="nc bnc" id="L811" title="All 2 branches missed.">        if (mapPath.equals(&quot;map/map.tmx&quot;)) {</span>
+<span class="nc" id="L812">            this.portal = new Portal(&quot;hiddenRoom&quot;, &quot;map/hiddenRoom.tmx&quot;);</span>
+        }else {
+<span class="nc" id="L814">            this.portal = new Portal (&quot;portal&quot;, &quot;map/map.tmx&quot;);</span>
+        }
+
+        //add the dean
+<span class="nc bnc" id="L818" title="All 2 branches missed.">        for (Npc student : students) {</span>
+<span class="nc" id="L819">            student.setPosition(objectObjects);</span>
+<span class="nc" id="L820">        }</span>
+
+        //add locker8
+<span class="nc bnc" id="L823" title="All 2 branches missed.">        for (Locker locker : lockers) {</span>
+<span class="nc" id="L824">            locker.setPosition(objectObjects);</span>
+<span class="nc" id="L825">        }</span>
+        
+        //reset portal activiation for the new map
+<span class="nc bnc" id="L828" title="All 2 branches missed.">        if (portal != null) {</span>
+<span class="nc" id="L829">            portal.setActivated(false); //so the player can retrigger the portal of the new map to go abck to the og</span>
+<span class="nc" id="L830">            portal.setPosition(objectObjects); </span>
+        }
+
+        //set the player to the correct points in each map
+<span class="nc bnc" id="L834" title="All 2 branches missed.">        if (mapPath.equals(&quot;map/map.tmx&quot;)) {</span>
+            //returning to main map
+<span class="nc" id="L836">            player.setX(31f);</span>
+<span class="nc" id="L837">            player.setY(8f);</span>
+            //recreate lockers
+<span class="nc bnc" id="L839" title="All 2 branches missed.">            for(int i = 1; i &lt;=7 ; i++) {</span>
+<span class="nc" id="L840">                lockers.add(new Locker(&quot;locker&quot; + i));</span>
+            }
+<span class="nc" id="L842">            resetGuardPositions();</span>
+        } else {
+<span class="nc" id="L844">            Locker locker8 = new Locker(&quot;locker8&quot;); //should create locker with student card in it</span>
+<span class="nc" id="L845">            lockers.add(locker8);</span>
+<span class="nc" id="L846">            player.setX(16);</span>
+<span class="nc" id="L847">            player.setY(16);</span>
+        }   
+<span class="nc" id="L849">        player.updateSpritePositions();</span>
+
+        //reposition the lockers to where they belong
+<span class="nc bnc" id="L852" title="All 2 branches missed.">        for (Locker locker : lockers) {</span>
+<span class="nc" id="L853">            locker.setPosition(objectObjects);</span>
+<span class="nc" id="L854">        }</span>
+<span class="nc" id="L855">    }</span>
+
+    private void resetGuardPositions() {
+        //reset all the guards on the main map back to their correct positions
+<span class="nc" id="L859">        guards.clear();</span>
+<span class="nc" id="L860">        guards = new ArrayList&lt;&gt;() {</span>
+            {
+<span class="nc" id="L862">                add(new Guard(19f, 28f, true, 0.5f)); //by spawn</span>
+<span class="nc" id="L863">                add(new Guard(15f, 43f, false, 0.5f)); //top left</span>
+<span class="nc" id="L864">                add(new Guard(13f, 43f, false, 0.5f)); //top left</span>
+<span class="nc" id="L865">                add(new Guard(11f, 43f, false, 0.5f)); //top left</span>
+<span class="nc" id="L866">                add(new Guard(9f, 43f, false, 0.5f)); //top left</span>
+<span class="nc" id="L867">                add(new Guard(11f, 36f, false, 1.5f)); //below top left</span>
+<span class="nc" id="L868">                add(new Guard(15f, 36f, false, 1.5f)); //below top left</span>
+<span class="nc" id="L869">                add(new Guard(14f, 17f, false, 1f));//by exam7</span>
+<span class="nc" id="L870">                add(new Guard(17f, 17f, false, 1f));//by exam7</span>
+<span class="nc" id="L871">                add(new Guard(27f, 16f, true, 0.5f));//start of new map bit</span>
+<span class="nc" id="L872">                add(new Guard(4f, 5f, true, 1f));//bottom left</span>
+<span class="nc" id="L873">                add(new Guard(4f, 7f, true, 1f));//bottom left</span>
+<span class="nc" id="L874">                add(new Guard(21f, 12f, false, 1f));//by exam7</span>
+<span class="nc" id="L875">                add(new Guard(9f, 23f, true, 2f)); //below skinny passage </span>
+<span class="nc" id="L876">                add(new Guard(15f, 3f, true, 2f)); //bottom left flat bit</span>
+<span class="nc" id="L877">                add(new Guard(30f, 5f, false, 2f)); //classroom 1</span>
+<span class="nc" id="L878">                add(new Guard(32f, 5f, false, 2f)); //classroom 1</span>
+<span class="nc" id="L879">            }</span>
+        };
+<span class="nc" id="L881">    }</span>
+
+    public void handleExamResult(boolean correct) {
+<span class="nc" id="L884">        this.unPause();</span>
+
+<span class="nc bnc" id="L886" title="All 2 branches missed.">        if(correct) {</span>
+            //grant immunity for 8 seconds
+<span class="nc" id="L888">            hasImmunity = true;</span>
+<span class="nc" id="L889">            immunityTimer = 8f; //8 seconds</span>
+<span class="nc" id="L890">            correctAnswers ++; </span>
+        } else {
+            //increase the guard's speed if the answer is incorrect
+<span class="nc" id="L893">            guardSpeedMultiplier = 2.5f; //50% faster guard movement</span>
+<span class="nc" id="L894">            guardsSpedUp = true;</span>
+<span class="nc" id="L895">            guardSpeedTimer = 15f; //15 seconds    </span>
+            
+            //track the first wrong answer and update the negative events counter
+<span class="nc bnc" id="L898" title="All 2 branches missed.">            if (!wrongAnswerCounted) {</span>
+<span class="nc" id="L899">                wrongAnswerCounted = true;</span>
+            }
+        }
+<span class="nc" id="L902">    }</span>
+
+    private boolean hasStudentCard() {
+<span class="nc bnc" id="L905" title="All 2 branches missed.">        for (InventoryItem item : inventory.getSlots()) {</span>
+<span class="nc bnc" id="L906" title="All 2 branches missed.">            if (item.getType() == InventoryItem.STUDENT_CARD) {</span>
+<span class="nc" id="L907">                return true;</span>
+            }
+<span class="nc" id="L909">        }</span>
+<span class="nc" id="L910">        return false;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

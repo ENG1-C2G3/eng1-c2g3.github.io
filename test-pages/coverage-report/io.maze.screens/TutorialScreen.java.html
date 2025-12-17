@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TutorialScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.maze.screens</a> &gt; <span class="el_source">TutorialScreen.java</span></div><h1>TutorialScreen.java</h1><pre class="source lang-java linenums">package io.maze.screens;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import io.maze.core.Main;
+/**
+ * Contains attributes for all the button images as well as its
+ * own viewport.
+ *
+ * As a general rule, every screen should have its own viewport
+ */
+public class TutorialScreen implements Screen{
+
+    private final Main game;
+    private final MainMenu menu;
+    private final BitmapFont font;
+    private final ExtendViewport viewport;
+
+    Texture escKey, wKey, aKey, sKey, dKey, eKey, tKey; //T key added for teleportation
+    Texture backInactive, backActive, playButtonActive, playButtonInactive;
+
+    /* The game is passed in every time we create a new screen,
+     * in order to access the spritebatch.
+     */
+<span class="nc" id="L31">    public TutorialScreen(final Main game, final MainMenu menu){</span>
+<span class="nc" id="L32">        this.game = game;</span>
+<span class="nc" id="L33">        this.menu = menu;</span>
+<span class="nc" id="L34">        this.font = new BitmapFont();</span>
+<span class="nc" id="L35">        font.setUseIntegerPositions(false);</span>
+<span class="nc" id="L36">        font.getData().setScale(0.05f);</span>
+<span class="nc" id="L37">        this.viewport = new ExtendViewport(16,9);</span>
+<span class="nc" id="L38">        this.escKey = new Texture(&quot;menu/escKey.png&quot;);</span>
+<span class="nc" id="L39">        this.wKey = new Texture(&quot;menu/wKey.png&quot;);</span>
+<span class="nc" id="L40">        this.aKey = new Texture(&quot;menu/aKey.png&quot;);</span>
+<span class="nc" id="L41">        this.sKey = new Texture(&quot;menu/sKey.png&quot;);</span>
+<span class="nc" id="L42">        this.dKey = new Texture(&quot;menu/dKey.png&quot;);</span>
+<span class="nc" id="L43">        this.eKey = new Texture(&quot;menu/eKey.png&quot;);</span>
+<span class="nc" id="L44">        this.tKey = new Texture(&quot;menu/tKey.png&quot;); //T key for teleportation</span>
+<span class="nc" id="L45">        this.backActive = new Texture(&quot;menu/backActive.png&quot;);</span>
+<span class="nc" id="L46">        this.backInactive = new Texture(&quot;menu/backInactive.png&quot;);</span>
+<span class="nc" id="L47">        this.playButtonActive = new Texture(&quot;menu/playActive.png&quot;);</span>
+<span class="nc" id="L48">        this.playButtonInactive = new Texture(&quot;menu/playInactive.png&quot;);</span>
+<span class="nc" id="L49">    }</span>
+
+    @Override
+    public void show() {
+
+<span class="nc" id="L54">    }</span>
+    /**
+     * Called when the screen renders itself, handles the drawing of all the menu buttons.
+     *
+     * @param delta the delta time
+     */
+    @Override
+    public void render(float delta) {
+<span class="nc" id="L62">        ScreenUtils.clear(Color.SLATE);</span>
+
+<span class="nc" id="L64">        viewport.apply();</span>
+<span class="nc" id="L65">        game.getBatch().setProjectionMatrix(viewport.getCamera().combined);</span>
+
+<span class="nc" id="L67">        game.getBatch().begin();</span>
+
+        // Setting the heights, widths and positions of the various buttons
+<span class="nc" id="L70">        final float backButtonWidth = 5f, backButtonHeight = 2f, backButtonX = 1f, backButtonY = 1f;</span>
+
+<span class="nc" id="L72">        final float playButtonWidth = 5f, playButtonHeight = 2f;</span>
+<span class="nc" id="L73">        final float playButtonX = viewport.getWorldWidth() - 6f;</span>
+<span class="nc" id="L74">        final float playButtonY = 1f;</span>
+
+
+<span class="nc" id="L77">        final float wWidth = 1f, wHeight = 1f, wButtonX = 2f, wButtonY = 10f;</span>
+<span class="nc" id="L78">        final float aWidth = 1f, aHeight = 1f, aButtonX = 1f, aButtonY = 9f;</span>
+<span class="nc" id="L79">        final float sWidth = 1f, sHeight = 1f, sButtonX = 2f, sButtonY = 9f;</span>
+<span class="nc" id="L80">        final float dWidth = 1f, dHeight = 1f, dButtonX = 3f, dButtonY = 9f;</span>
+<span class="nc" id="L81">        final float eWidth = 1f, eHeight = 1f, eButtonX = 2f, eButtonY = 7.5f;</span>
+<span class="nc" id="L82">        final float tWidth = 1f, tHeight = 1f, tButtonX = 2f, tButtonY = 4.5f; //T key</span>
+<span class="nc" id="L83">        final float escWidth = 1f, escHeight = 1f, escButtonX = 2f, escButtonY = 6f;</span>
+
+
+        // Convert world coordinates to screen coordinates
+<span class="nc" id="L87">        Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);</span>
+<span class="nc" id="L88">        viewport.getCamera().unproject(touchPos);</span>
+
+        // TODO: Seperate this logic into a helper function 'isHovering(Button)'
+<span class="nc bnc" id="L91" title="All 8 branches missed.">        boolean isHoveringBack = touchPos.x &lt; backButtonX + backButtonWidth &amp;&amp;</span>
+            touchPos.x &gt; backButtonX &amp;&amp;
+            touchPos.y &lt; backButtonY + backButtonHeight &amp;&amp;
+            touchPos.y &gt; backButtonY;
+
+<span class="nc bnc" id="L96" title="All 8 branches missed.">        boolean isHoveringPlay = touchPos.x &lt; playButtonX + playButtonWidth &amp;&amp;</span>
+            touchPos.x &gt; playButtonX &amp;&amp;
+            touchPos.y &lt; playButtonY + playButtonHeight &amp;&amp;
+            touchPos.y &gt; playButtonY;
+
+<span class="nc" id="L101">        game.getBatch().draw(wKey,wButtonX,wButtonY,wWidth,wHeight);</span>
+<span class="nc" id="L102">        game.getBatch().draw(aKey,aButtonX,aButtonY,aWidth,aHeight);</span>
+<span class="nc" id="L103">        game.getBatch().draw(sKey,sButtonX,sButtonY,sWidth,sHeight);</span>
+<span class="nc" id="L104">        game.getBatch().draw(dKey,dButtonX,dButtonY,dWidth,dHeight);</span>
+<span class="nc" id="L105">        game.getBatch().draw(tKey, tButtonX, tButtonY, tWidth, tHeight); //T Key</span>
+
+
+<span class="nc" id="L108">        font.draw(game.getBatch(), &quot;use WASD to move&quot;,5f,10f);</span>
+<span class="nc" id="L109">        font.draw(game.getBatch(), &quot;press E to interact&quot;,5f,8.45f);</span>
+<span class="nc" id="L110">        font.draw(game.getBatch(), &quot;press ESC to pause&quot;,5f,6.75f);</span>
+<span class="nc" id="L111">        font.draw(game.getBatch(), &quot;press T to teleport through portals&quot;, 5f, 5.35f); //position T key</span>
+
+
+<span class="nc" id="L114">        game.getBatch().draw(eKey,eButtonX,eButtonY,eWidth,eHeight);</span>
+<span class="nc" id="L115">        game.getBatch().draw(escKey,escButtonX,escButtonY,escWidth,escHeight);</span>
+
+        // If the user is not hovering back:
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        if (!isHoveringBack){</span>
+            // Draw inactive sprite
+<span class="nc" id="L120">            game.getBatch().draw(backInactive, backButtonX, backButtonY,backButtonWidth,backButtonHeight);</span>
+        }
+        else{
+            // Draw the active sprite
+<span class="nc" id="L124">            game.getBatch().draw(backActive, backButtonX, backButtonY,backButtonWidth,backButtonHeight);</span>
+        }
+
+<span class="nc bnc" id="L127" title="All 2 branches missed.">        if (!isHoveringPlay){</span>
+<span class="nc" id="L128">            game.getBatch().draw(playButtonInactive, playButtonX, playButtonY,playButtonWidth,playButtonHeight);</span>
+        }
+        else{
+<span class="nc" id="L131">            game.getBatch().draw(playButtonActive, playButtonX, playButtonY,playButtonWidth,playButtonHeight);</span>
+        }
+
+        // On click
+<span class="nc bnc" id="L135" title="All 2 branches missed.">        if (Gdx.input.justTouched()) {</span>
+            // On the back button
+<span class="nc bnc" id="L137" title="All 2 branches missed.">            if (isHoveringBack) {</span>
+                // Change the screen to the menu
+<span class="nc" id="L139">                game.setScreen(menu);</span>
+<span class="nc" id="L140">                dispose();</span>
+            }
+
+<span class="nc bnc" id="L143" title="All 2 branches missed.">            else if (isHoveringPlay) {</span>
+                //change the screen to the menu
+<span class="nc" id="L145">                game.setScreen(new GameScreen(game));</span>
+<span class="nc" id="L146">                dispose();</span>
+            }
+        }
+<span class="nc" id="L149">        game.getBatch().end();</span>
+<span class="nc" id="L150">    }</span>
+
+    /**
+     * Called whenever the application is resized
+     * &lt;p&gt;
+     * Updates how the viewport scales with screen pixels to keep the aspect ratio consistent.
+     *
+     * @param w width
+     * @param h height
+     */
+    @Override
+    public void resize(int w, int h) {
+<span class="nc" id="L162">        viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());</span>
+        //set the camera centrally
+<span class="nc" id="L164">        viewport.getCamera().position.set(viewport.getWorldWidth() / 2f, viewport.getWorldHeight() / 2f, 0);</span>
+<span class="nc" id="L165">        viewport.getCamera().update();</span>
+<span class="nc" id="L166">    }</span>
+
+    @Override
+    public void pause() {
+
+<span class="nc" id="L171">    }</span>
+
+    @Override
+    public void resume() {
+
+<span class="nc" id="L176">    }</span>
+
+    @Override
+    public void hide() {
+
+<span class="nc" id="L181">    }</span>
+
+    @Override
+    public void dispose() {
+
+<span class="nc" id="L186">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

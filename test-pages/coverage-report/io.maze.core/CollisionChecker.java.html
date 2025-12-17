@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CollisionChecker.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.maze.core</a> &gt; <span class="el_source">CollisionChecker.java</span></div><h1>CollisionChecker.java</h1><pre class="source lang-java linenums">package io.maze.core;
+
+import java.util.List;
+
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Rectangle;
+
+import io.maze.entities.Entity;
+import io.maze.entities.Player;
+import io.maze.objects.Object;
+
+/**
+ * The CollisionChecker class contains static methods which determine if a collision is occurring.
+ */
+
+<span class="nc" id="L18">public class CollisionChecker {</span>
+
+    /**
+     * Checks for collisions between an entity and collidable objects on the map.
+     *
+     * @param entity {@link io.maze.entities.Player Player} or {@link io.maze.entities.Guard Guard}
+     * @param objects collidable objects on the map e.g. Map Walls
+     * @return boolean true if collision is occurring
+     */
+    public static boolean isColliding(Entity entity, MapObjects objects) {
+
+<span class="nc" id="L29">        Rectangle futureHitbox = new Rectangle(</span>
+<span class="nc" id="L30">            entity.getActiveSprite().getX() + entity.getDeltaX(),</span>
+<span class="nc" id="L31">            entity.getActiveSprite().getY() + entity.getDeltaY(),</span>
+            1f,
+            1f
+        );
+
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        for (RectangleMapObject collisionObject : objects.getByType(RectangleMapObject.class)) {</span>
+
+<span class="nc" id="L38">            Rectangle object = collisionObject.getRectangle();</span>
+
+<span class="nc" id="L40">            Rectangle scaledObject = new Rectangle(</span>
+                object.x / 16f,
+                object.y / 16f,
+                object.width / 16f,
+                object.height / 16f
+            );
+
+<span class="nc bnc" id="L47" title="All 2 branches missed.">            if (Intersector.overlaps(scaledObject, futureHitbox)) {</span>
+<span class="nc" id="L48">                return true;</span>
+            }
+<span class="nc" id="L50">        }</span>
+<span class="nc" id="L51">        return false;</span>
+    }
+
+    /**
+     * Checks for collisions between an entity and collidable objects on the map with the ability
+     * to specify exceptions.
+     *
+     * @param entity {@link io.maze.entities.Player Player} or {@link io.maze.entities.Guard Guard}
+     * @param objects collidable objects on the map
+     * @param exceptions objects which are not meant to be collidable
+     * e.g. completed {@link io.maze.objects.Exam Exams}
+     * @return boolean true if collision is occurring
+     */
+    public static boolean isColliding(Entity entity, MapObjects objects, List&lt;String&gt; exceptions) {
+
+<span class="nc" id="L66">        Rectangle futureHitbox = new Rectangle(</span>
+<span class="nc" id="L67">            entity.getActiveSprite().getX() + entity.getDeltaX(),</span>
+<span class="nc" id="L68">            entity.getActiveSprite().getY() + entity.getDeltaY(),</span>
+            1f,
+            1f
+        );
+
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        for (RectangleMapObject collisionObject : objects.getByType(RectangleMapObject.class)) {</span>
+
+<span class="nc bnc" id="L75" title="All 4 branches missed.">            if (exceptions != null &amp;&amp; exceptions.contains(collisionObject.getName())) {</span>
+<span class="nc" id="L76">                continue;</span>
+            }
+
+<span class="nc" id="L79">            Rectangle object = collisionObject.getRectangle();</span>
+
+<span class="nc" id="L81">            Rectangle scaledObject = new Rectangle(</span>
+                object.x / 16f,
+                object.y / 16f,
+                object.width / 16f,
+                object.height / 16f
+            );
+
+<span class="nc bnc" id="L88" title="All 2 branches missed.">            if (Intersector.overlaps(scaledObject, futureHitbox)) {</span>
+<span class="nc" id="L89">                return true;</span>
+            }
+<span class="nc" id="L91">        }</span>
+<span class="nc" id="L92">        return false;</span>
+    }
+
+    /**
+     * Checks for collisions between the player and another entity.
+     *
+     * @param player the character the player is controlling
+     * @param entity a non-playable character such as a {@link io.maze.entities.Guard Guard}
+     * @return boolean true if a collision is occurring
+     */
+    public static boolean isColliding(Player player, Entity entity) {
+<span class="nc" id="L103">        Rectangle playerHitbox = new Rectangle(</span>
+<span class="nc" id="L104">            player.getActiveSprite().getX(),</span>
+<span class="nc" id="L105">            player.getActiveSprite().getY(),</span>
+            1f,
+            1f
+        );
+
+<span class="nc" id="L110">        Rectangle entityHitbox = new Rectangle(</span>
+<span class="nc" id="L111">            entity.getActiveSprite().getX(),</span>
+<span class="nc" id="L112">            entity.getActiveSprite().getY(),</span>
+            1f,
+            1f
+        );
+
+<span class="nc" id="L117">        return Intersector.overlaps(playerHitbox, entityHitbox);</span>
+    }
+
+    /**
+     * Checks for collisions between the player and an object.
+     *
+     * @param player the character the player is controlling
+     * @param object item on the map, e.g. uncompleted {@link io.maze.objects.Exam Exams}
+     * @return boolean true if a collision is occurring
+     */
+    public static boolean isColliding(Player player, Object object) {
+<span class="nc" id="L128">        Rectangle playerHitbox = new Rectangle(</span>
+<span class="nc" id="L129">            player.getActiveSprite().getX(),</span>
+<span class="nc" id="L130">            player.getActiveSprite().getY(),</span>
+            1f,
+            1f
+        );
+
+<span class="nc" id="L135">        Rectangle objectHitbox = new Rectangle(</span>
+<span class="nc" id="L136">            object.getSprite().getX(),</span>
+<span class="nc" id="L137">            object.getSprite().getY(),</span>
+            1f,
+            1f
+        );
+
+<span class="nc" id="L142">        return Intersector.overlaps(playerHitbox, objectHitbox);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

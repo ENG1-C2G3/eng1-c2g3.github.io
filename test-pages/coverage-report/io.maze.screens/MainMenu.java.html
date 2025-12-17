@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MainMenu.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.maze.screens</a> &gt; <span class="el_source">MainMenu.java</span></div><h1>MainMenu.java</h1><pre class="source lang-java linenums">package io.maze.screens;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import io.maze.core.Main;
+
+/**
+ * The MainMenu screen contains attributes for all the button images as well as its own viewport.
+ * &lt;p&gt;
+ * As a general rule, every screen should have its own viewport.
+ */
+public class MainMenu implements Screen{
+
+    final Main game;
+    private final ExtendViewport viewport;
+
+    Texture playButtonActive, playButtonInactive;
+    Texture exitButtonActive, exitButtonInactive;
+    Texture settingsButtonActive, settingsButtonInactive;
+    Texture leaderboardButtonActive, leaderboardButtonInactive;
+    private final BitmapFont font;
+    private final GlyphLayout glyphLayout;
+
+    /**
+     * Instantiates a new Main menu.
+     *
+     * @param game the game is passed in every time we create a new
+     *             screen in order to access the spritebatch
+     *
+     */
+<span class="nc" id="L39">    public MainMenu(final Main game){</span>
+<span class="nc" id="L40">        this.game = game;</span>
+<span class="nc" id="L41">        this.viewport = new ExtendViewport(16,9);</span>
+<span class="nc" id="L42">        this.playButtonActive = new Texture(&quot;menu/playActive.png&quot;);</span>
+<span class="nc" id="L43">        this.playButtonInactive = new Texture(&quot;menu/playInactive.png&quot;);</span>
+<span class="nc" id="L44">        this.exitButtonActive = new Texture(&quot;menu/exitActive.png&quot;);</span>
+<span class="nc" id="L45">        this.exitButtonInactive = new Texture(&quot;menu/exitInactive.png&quot;);</span>
+<span class="nc" id="L46">        this.settingsButtonActive = new Texture(&quot;menu/settingsActive.png&quot;);</span>
+<span class="nc" id="L47">        this.settingsButtonInactive = new Texture(&quot;menu/settingsInactive.png&quot;);</span>
+<span class="nc" id="L48">        this.leaderboardButtonInactive = createButtonTexture(new Color(0f, 0f, 0f, 1f), Color.WHITE);</span>
+<span class="nc" id="L49">        this.leaderboardButtonActive = createButtonTexture(new Color(0.15f, 0.15f, 0.15f, 1f), Color.WHITE);</span>
+<span class="nc" id="L50">        this.font = new BitmapFont();</span>
+<span class="nc" id="L51">        font.setUseIntegerPositions(false);</span>
+<span class="nc" id="L52">        font.setColor(Color.WHITE);</span>
+<span class="nc" id="L53">        font.getData().setScale(0.04f);</span>
+<span class="nc" id="L54">        this.glyphLayout = new GlyphLayout();</span>
+<span class="nc" id="L55">    }</span>
+
+    @Override
+    public void show() {
+
+<span class="nc" id="L60">    }</span>
+    /** Called when the screen renders itself, handles the drawing of all the menu buttons. */
+    @Override
+    public void render(float delta) {
+<span class="nc" id="L64">        ScreenUtils.clear(Color.BLACK);</span>
+
+<span class="nc" id="L66">        viewport.apply();</span>
+<span class="nc" id="L67">        game.getBatch().setProjectionMatrix(viewport.getCamera().combined);</span>
+
+<span class="nc" id="L69">        game.getBatch().begin();</span>
+
+<span class="nc" id="L71">        final float exitButtonWidth = 5f, exitButtonHeight = 2f;</span>
+<span class="nc" id="L72">        final float exitButtonX = viewport.getWorldWidth() / 2f - exitButtonWidth / 2f;</span>
+<span class="nc" id="L73">        final float exitButtonY = 1f;</span>
+
+
+<span class="nc" id="L76">        final float settingsButtonWidth = 5f, settingsButtonHeight = 2f;</span>
+<span class="nc" id="L77">        final float settingsButtonX = viewport.getWorldWidth() / 2f - settingsButtonWidth / 2f;</span>
+<span class="nc" id="L78">        final float settingsButtonY = 5f;</span>
+
+<span class="nc" id="L80">        final float leaderboardButtonWidth = 5f, leaderboardButtonHeight = 2f;</span>
+<span class="nc" id="L81">        final float leaderboardButtonX = viewport.getWorldWidth() / 2f - leaderboardButtonWidth / 2f;</span>
+<span class="nc" id="L82">        final float leaderboardButtonY = 3f;</span>
+
+
+<span class="nc" id="L85">        final float playButtonWidth = 5f, playButtonHeight = 2f;</span>
+<span class="nc" id="L86">        final float playButtonX = viewport.getWorldWidth() / 2f - playButtonWidth / 2f;</span>
+<span class="nc" id="L87">        final float playButtonY = 9f;</span>
+
+        //Convert world coordinates to screen coordinates
+<span class="nc" id="L90">        Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);</span>
+<span class="nc" id="L91">        viewport.getCamera().unproject(touchPos);</span>
+
+
+        //boolean values that turn True if the user is hovering over the specified button
+        //each one takes the mouse position and compares it to the place on the screen where the
+        //button is drawn
+<span class="nc bnc" id="L97" title="All 8 branches missed.">        boolean isHoveringPlay = touchPos.x &lt; playButtonX + playButtonWidth &amp;&amp;</span>
+            touchPos.x &gt; playButtonX &amp;&amp;
+            touchPos.y &lt; playButtonY + playButtonHeight &amp;&amp;
+            touchPos.y &gt; playButtonY;
+
+<span class="nc bnc" id="L102" title="All 8 branches missed.">        boolean isHoveringSettings = touchPos.x &lt; settingsButtonX + settingsButtonWidth &amp;&amp;</span>
+            touchPos.x &gt; settingsButtonX &amp;&amp;
+            touchPos.y &lt; settingsButtonY + settingsButtonHeight &amp;&amp;
+            touchPos.y &gt; settingsButtonY;
+
+<span class="nc bnc" id="L107" title="All 8 branches missed.">        boolean isHoveringLeaderboard = touchPos.x &lt; leaderboardButtonX + leaderboardButtonWidth &amp;&amp;</span>
+            touchPos.x &gt; leaderboardButtonX &amp;&amp;
+            touchPos.y &lt; leaderboardButtonY + leaderboardButtonHeight &amp;&amp;
+            touchPos.y &gt; leaderboardButtonY;
+
+<span class="nc bnc" id="L112" title="All 8 branches missed.">        boolean isHoveringExit = touchPos.x &lt; exitButtonX + exitButtonWidth &amp;&amp;</span>
+            touchPos.x &gt; exitButtonX &amp;&amp;
+            touchPos.y &lt; exitButtonY + exitButtonHeight &amp;&amp;
+            touchPos.y &gt; exitButtonY;
+
+        //if the user is not hovering play:
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        if (!isHoveringPlay){</span>
+            //draw the inactive play button
+<span class="nc" id="L120">            game.getBatch().draw(</span>
+                playButtonInactive, playButtonX, playButtonY,
+                playButtonWidth, playButtonHeight
+            );
+        }
+        //otherwise:
+        else{
+            //draw the active play button
+<span class="nc" id="L128">            game.getBatch().draw(</span>
+                playButtonActive, playButtonX, playButtonY,
+                playButtonWidth, playButtonHeight
+            );
+        }
+
+<span class="nc bnc" id="L134" title="All 2 branches missed.">        if (!isHoveringSettings){</span>
+<span class="nc" id="L135">            game.getBatch().draw(</span>
+                settingsButtonInactive, settingsButtonX, settingsButtonY,
+                settingsButtonWidth, settingsButtonHeight
+            );
+        }
+        else{
+<span class="nc" id="L141">            game.getBatch().draw(</span>
+                settingsButtonActive, settingsButtonX, settingsButtonY,
+                settingsButtonWidth, settingsButtonHeight
+            );
+        }
+
+<span class="nc bnc" id="L147" title="All 2 branches missed.">        if (!isHoveringLeaderboard){</span>
+<span class="nc" id="L148">            game.getBatch().draw(</span>
+                leaderboardButtonInactive, leaderboardButtonX, leaderboardButtonY,
+                leaderboardButtonWidth, leaderboardButtonHeight
+            );
+        }
+        else{
+<span class="nc" id="L154">            game.getBatch().draw(</span>
+                leaderboardButtonActive, leaderboardButtonX, leaderboardButtonY,
+                leaderboardButtonWidth, leaderboardButtonHeight
+            );
+        }
+
+<span class="nc" id="L160">        String leaderboardLabel = &quot;LEADERBOARD&quot;;</span>
+<span class="nc" id="L161">        glyphLayout.setText(font, leaderboardLabel);</span>
+<span class="nc" id="L162">        float textX = leaderboardButtonX + (leaderboardButtonWidth - glyphLayout.width) / 2f;</span>
+<span class="nc" id="L163">        float textY = leaderboardButtonY + (leaderboardButtonHeight + glyphLayout.height) / 2f;</span>
+<span class="nc" id="L164">        font.draw(game.getBatch(), leaderboardLabel, textX, textY);</span>
+
+<span class="nc bnc" id="L166" title="All 2 branches missed.">        if (!isHoveringExit){</span>
+<span class="nc" id="L167">            game.getBatch().draw(</span>
+                exitButtonInactive, exitButtonX, exitButtonY,
+                exitButtonWidth,exitButtonHeight
+            );
+        }
+        else{
+<span class="nc" id="L173">            game.getBatch().draw(</span>
+                exitButtonActive, exitButtonX, exitButtonY,
+                exitButtonWidth, exitButtonHeight
+            );
+        }
+
+        //if the user clicks:
+<span class="nc bnc" id="L180" title="All 2 branches missed.">        if (Gdx.input.justTouched()) {</span>
+            //on the play button
+<span class="nc bnc" id="L182" title="All 2 branches missed.">            if (isHoveringPlay) {</span>
+                //change the screen to the game
+<span class="nc" id="L184">                game.setScreen(new TutorialScreen(game,this));</span>
+<span class="nc" id="L185">                dispose();</span>
+            }
+            //on the settings button
+<span class="nc bnc" id="L188" title="All 2 branches missed.">            else if (isHoveringSettings) {</span>
+                // go to settings screen
+            }
+<span class="nc bnc" id="L191" title="All 2 branches missed.">            else if (isHoveringLeaderboard) {</span>
+<span class="nc" id="L192">                game.setScreen(new LeaderboardScreen(game));</span>
+<span class="nc" id="L193">                dispose();</span>
+            }
+            //on the exit button
+<span class="nc bnc" id="L196" title="All 2 branches missed.">            else if (isHoveringExit) {</span>
+                //exit the application
+<span class="nc" id="L198">                Gdx.app.exit();</span>
+            }
+        }
+<span class="nc" id="L201">        game.getBatch().end();</span>
+<span class="nc" id="L202">    }</span>
+
+    /** Scales the application according to the correct aspect ratio when it is resized. */
+    @Override
+    public void resize(int i, int i1) {
+<span class="nc" id="L207">        viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());</span>
+        //set the camera centrally
+<span class="nc" id="L209">        float worldCenterX = viewport.getWorldWidth() / 2f;</span>
+<span class="nc" id="L210">        float worldCenterY = viewport.getWorldHeight() / 2f;</span>
+<span class="nc" id="L211">        viewport.getCamera().position.set(worldCenterX, worldCenterY, 0);</span>
+<span class="nc" id="L212">        viewport.getCamera().update();</span>
+<span class="nc" id="L213">    }</span>
+
+    @Override
+    public void pause() {
+
+<span class="nc" id="L218">    }</span>
+
+    @Override
+    public void resume() {
+
+<span class="nc" id="L223">    }</span>
+
+    @Override
+    public void hide() {
+
+<span class="nc" id="L228">    }</span>
+
+    @Override
+    public void dispose() {
+
+<span class="nc" id="L233">        playButtonActive.dispose();</span>
+<span class="nc" id="L234">        playButtonInactive.dispose();</span>
+<span class="nc" id="L235">        exitButtonActive.dispose();</span>
+<span class="nc" id="L236">        exitButtonInactive.dispose();</span>
+<span class="nc" id="L237">        settingsButtonActive.dispose();</span>
+<span class="nc" id="L238">        settingsButtonInactive.dispose();</span>
+<span class="nc" id="L239">        leaderboardButtonActive.dispose();</span>
+<span class="nc" id="L240">        leaderboardButtonInactive.dispose();</span>
+<span class="nc" id="L241">        font.dispose();</span>
+<span class="nc" id="L242">    }</span>
+
+    private Texture createButtonTexture(Color fillColor, Color borderColor) {
+<span class="nc" id="L245">        Pixmap pixmap = new Pixmap(200, 80, Pixmap.Format.RGBA8888);</span>
+<span class="nc" id="L246">        pixmap.setColor(fillColor);</span>
+<span class="nc" id="L247">        pixmap.fill();</span>
+<span class="nc" id="L248">        pixmap.setColor(borderColor);</span>
+<span class="nc" id="L249">        pixmap.drawRectangle(0, 0, pixmap.getWidth(), pixmap.getHeight());</span>
+<span class="nc" id="L250">        Texture texture = new Texture(pixmap);</span>
+<span class="nc" id="L251">        pixmap.dispose();</span>
+<span class="nc" id="L252">        return texture;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

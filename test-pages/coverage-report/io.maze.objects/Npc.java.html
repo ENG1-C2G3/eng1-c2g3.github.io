@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Npc.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.maze.objects</a> &gt; <span class="el_source">Npc.java</span></div><h1>Npc.java</h1><pre class="source lang-java linenums">package io.maze.objects;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import io.maze.entities.Player;
+
+/**
+ * Represents the stationary NPCs which each have a single texture
+ * The NPC does not move and can be interacted with by the player
+ */
+public class Npc extends Object {
+    private String dialogue;
+<span class="nc" id="L17">    private boolean showMessage = false;</span>
+    private BitmapFont font;
+    private Vector2 position;
+    private Texture tecture;
+
+    /**
+     * Creates a new stationary NPC with its corresponding single texture
+     * @param texturePath the path to the NPC's texture
+     * @param name the name of the NPC object in the Tiled map
+     * @param dialogue the dialogue text the NPC will say 
+     */
+    
+    public Npc(String name, String texturePath, String dialogue) {
+        //pass the same texture path for all directions as the NPC is stationary and doesn't move
+<span class="nc" id="L31">        super(name, texturePath);</span>
+<span class="nc" id="L32">        this.dialogue = dialogue;</span>
+<span class="nc" id="L33">        this.font = new BitmapFont();</span>
+<span class="nc" id="L34">        this.font.getData().setScale(0.025f); </span>
+<span class="nc" id="L35">        this.font.setUseIntegerPositions(false);</span>
+<span class="nc" id="L36">    }</span>
+
+    /**
+     * Update if the dialogue is shown to the player depedning on the player's position anf if E has just been pressed
+     * @param player Player object
+     */
+
+    public void update(Player player) {
+        // Calculate distance between player and NPC
+<span class="nc" id="L45">        float playerX = player.getX();</span>
+<span class="nc" id="L46">        float playerY = player.getY();</span>
+<span class="nc" id="L47">        float npcX = getSprite().getX();</span>
+<span class="nc" id="L48">        float npcY = getSprite().getY();</span>
+        
+<span class="nc" id="L50">        float distanceX = Math.abs(playerX - npcX);</span>
+<span class="nc" id="L51">        float distanceY = Math.abs(playerY - npcY);</span>
+<span class="nc" id="L52">        float distance = (float) Math.sqrt(distanceX * distanceX + distanceY * distanceY);</span>
+
+<span class="nc bnc" id="L54" title="All 4 branches missed.">        if (distance &lt; 2f &amp;&amp; Gdx.input.isKeyJustPressed(Input.Keys.E)) {</span>
+<span class="nc" id="L55">            showMessage = true;</span>
+        }
+
+<span class="nc bnc" id="L58" title="All 4 branches missed.">        if(showMessage &amp;&amp; distance &gt; 3f) {</span>
+<span class="nc" id="L59">            showMessage = false;</span>
+        }
+<span class="nc" id="L61">    }</span>
+
+    /**
+     * Convenience method to be called by the game screen's renderer() method to draw the NPC's dialogue above ir
+     * @param batch SpriteBatch used by application to render all sprites
+     *
+     */
+    public void renderDialogue(SpriteBatch batch) {
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (showMessage) {</span>
+<span class="nc" id="L70">            font.draw(</span>
+                batch,
+                dialogue,
+<span class="nc" id="L73">                getSprite().getX() -2f,</span>
+<span class="nc" id="L74">                getSprite().getY() + getSprite().getHeight() + 1f);</span>
+        }
+<span class="nc" id="L76">    }</span>
+
+    public void dispose() {
+<span class="nc" id="L79">        super.dispose();</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        if (font != null) {</span>
+<span class="nc" id="L81">            font.dispose();</span>
+        }
+<span class="nc" id="L83">    }</span>
+    
+    public String getDialogue() {
+<span class="nc" id="L86">        return dialogue;</span>
+    }
+
+
+    public void setDialogue(String dialogue) {
+<span class="nc" id="L91">        this.dialogue = dialogue;</span>
+<span class="nc" id="L92">    }</span>
+
+    /**
+     * Get the NPC's position in the world
+     * @return the NPC's x-by-y coordinates as a 2D vector
+     */
+    public Vector2 getPosition() {
+<span class="nc" id="L99">        return new Vector2(getSprite().getX(),getSprite().getY());</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

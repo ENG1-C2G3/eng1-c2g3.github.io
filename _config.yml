@@ -57,3 +57,7 @@ sass:
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
+header_pages:
+  - index.markdown
+  - about.markdown

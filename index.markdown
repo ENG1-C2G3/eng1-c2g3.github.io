@@ -1,16 +1,16 @@
-# Grep the Exit
-You fell asleep in a lecture, and woke up in a maze.<br>
-The only way out is to complete your exams, but can you find them in the labyrinth of halls?<br>
-Oh, and campus security doesn't want you to escape...
+---
+# Feel free to add content and custom Front Matter to this file.
+# To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
 
+layout: home
 ---
 
-## Table of Contents
 - [Requirements](#requirements)
 - [Architecture](#architecture)
 - [Method Selection and Planning](#method-selection-and-planning)
 - [Risk Assessment and Mitigation](#risk-assessment-and-mitigation)
 - [Implementation](#implementation)
+- [Testing](#testing)
 - [Executable JAR File](#executable-jar-file)
 - [Version Control Repository](#version-control-repository)
 - [Appendix](#appendix)
@@ -49,6 +49,10 @@ View the [plan documentation](https://docs.google.com/document/d/1KfvuGMK_qkdju_
 View the [risk assessment documentation](https://docs.google.com/document/d/1q2dpIEfY9WkbCrqf0yL3F4u0QLPalGq8bDHmsISkQVg/edit?usp=sharing)
 ## Implementation
 View the [implementation documentation](https://docs.google.com/document/d/1-Vh3uXbzmQkqMuLtdtFiZ4HqbYDZRsB_MRf0836829E/edit?usp=sharing)
+## Testing
+- View the [Gradle test report](/test-pages/gradle-test-report/index.html)
+- View the [Coverage Report](/test-pages/coverage-report/index.html)
+- View the [Manual Tests](/manual-tests)
 ## Executable JAR File
 [Download the game](https://github.com/ENG1-C2G3/maze-game/releases/download/Final/GrepTheExit.jar)
 ## Version Control Repository
@@ -95,3 +99,4 @@ View the [maze-game repository](https://github.com/ENG1-C2G3/maze-game)
 ![state2](/assets/state2.png)
 #### D.9: WinScreen State Diagram
 ![state3](/assets/state3.png)
+

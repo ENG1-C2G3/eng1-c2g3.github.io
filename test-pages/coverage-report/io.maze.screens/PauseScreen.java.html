@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PauseScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.maze.screens</a> &gt; <span class="el_source">PauseScreen.java</span></div><h1>PauseScreen.java</h1><pre class="source lang-java linenums">package io.maze.screens;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import io.maze.core.Main;
+
+/**
+ * The PauseScreen contains attributes for all the button images as well as its
+ * own viewport.
+ *
+ * As a general rule, every screen should have its own viewport
+ *
+ * @see MainMenu
+ */
+public class PauseScreen implements Screen{
+
+    final Main game;
+    final GameScreen gameScreen;
+    private final ExtendViewport viewport;
+    Texture resumeButtonActive, resumeButtonInactive;
+    Texture exitButtonActive, exitButtonInactive;
+    Texture settingsButtonActive, settingsButtonInactive;
+
+    /**
+     * @param game passed in every time a new screen is created in order to access the spritebatch
+     * @param gameScreen allows us to return to the game in its original state after a pause
+     */
+<span class="nc" id="L33">    public PauseScreen(final Main game, final GameScreen gameScreen){</span>
+<span class="nc" id="L34">        this.game = game;</span>
+<span class="nc" id="L35">        this.gameScreen = gameScreen;</span>
+<span class="nc" id="L36">        this.viewport = new ExtendViewport(16,9);</span>
+<span class="nc" id="L37">        this.resumeButtonActive = new Texture(&quot;menu/resumeActive.png&quot;);</span>
+<span class="nc" id="L38">        this.resumeButtonInactive = new Texture(&quot;menu/resumeInactive.png&quot;);</span>
+<span class="nc" id="L39">        this.exitButtonActive = new Texture(&quot;menu/exitActive.png&quot;);</span>
+<span class="nc" id="L40">        this.exitButtonInactive = new Texture(&quot;menu/exitInactive.png&quot;);</span>
+<span class="nc" id="L41">        this.settingsButtonActive = new Texture(&quot;menu/settingsActive.png&quot;);</span>
+<span class="nc" id="L42">        this.settingsButtonInactive = new Texture(&quot;menu/settingsInactive.png&quot;);</span>
+<span class="nc" id="L43">    }</span>
+
+    @Override
+    public void show() {
+
+<span class="nc" id="L48">    }</span>
+    /**
+     * Called when the screen renders itself.
+     * &lt;p&gt;
+     * Handles the drawing of all the menu buttons
+     *
+     * @param delta the delta time
+     */
+    @Override
+    public void render(float delta) {
+<span class="nc" id="L58">        ScreenUtils.clear(Color.BLACK);</span>
+
+<span class="nc" id="L60">        viewport.apply();</span>
+<span class="nc" id="L61">        game.getBatch().setProjectionMatrix(viewport.getCamera().combined);</span>
+
+<span class="nc" id="L63">        game.getBatch().begin();</span>
+
+<span class="nc" id="L65">        final float exitButtonWidth = 5f, exitButtonHeight = 2f;</span>
+<span class="nc" id="L66">        final float exitButtonX = viewport.getWorldWidth() / 2f - exitButtonWidth / 2f;</span>
+<span class="nc" id="L67">        final float exitButtonY = 1f;</span>
+
+<span class="nc" id="L69">        final float settingsButtonWidth = 5f, settingsButtonHeight = 2f;</span>
+<span class="nc" id="L70">        final float settingsButtonX = viewport.getWorldWidth() / 2f - settingsButtonWidth / 2f;</span>
+<span class="nc" id="L71">        final float settingsButtonY = 5f;</span>
+
+<span class="nc" id="L73">        final float resumeButtonWidth = 5f, resumeButtonHeight = 2f;</span>
+<span class="nc" id="L74">        final float resumeButtonX = viewport.getWorldWidth() / 2f - resumeButtonWidth / 2f;</span>
+<span class="nc" id="L75">        final float resumeButtonY = 9f;</span>
+
+        //Convert world coordinates to screen coordinates
+<span class="nc" id="L78">        Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);</span>
+<span class="nc" id="L79">        viewport.getCamera().unproject(touchPos);</span>
+
+
+        //boolean values that turn True if the user is hovering over the specified button
+        //each one takes the mouse position and compares it to the place on the screen where the
+        //button is drawn
+<span class="nc bnc" id="L85" title="All 8 branches missed.">        boolean isHoveringResume = touchPos.x &lt; resumeButtonX + resumeButtonWidth &amp;&amp;</span>
+            touchPos.x &gt; resumeButtonX &amp;&amp;
+            touchPos.y &lt; resumeButtonY + resumeButtonHeight &amp;&amp;
+            touchPos.y &gt; resumeButtonY;
+
+<span class="nc bnc" id="L90" title="All 8 branches missed.">        boolean isHoveringSettings = touchPos.x &lt; settingsButtonX + settingsButtonWidth &amp;&amp;</span>
+            touchPos.x &gt; settingsButtonX &amp;&amp;
+            touchPos.y &lt; settingsButtonY + settingsButtonHeight &amp;&amp;
+            touchPos.y &gt; settingsButtonY;
+
+<span class="nc bnc" id="L95" title="All 8 branches missed.">        boolean isHoveringExit = touchPos.x &lt; exitButtonX + exitButtonWidth &amp;&amp;</span>
+            touchPos.x &gt; exitButtonX &amp;&amp;
+            touchPos.y &lt; exitButtonY + exitButtonHeight &amp;&amp;
+            touchPos.y &gt; exitButtonY;
+
+        //if the user is not hovering resume:
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        if (!isHoveringResume){</span>
+            //draw the inactive resume button
+<span class="nc" id="L103">            game.getBatch().draw(resumeButtonInactive,resumeButtonX,resumeButtonY,resumeButtonWidth,resumeButtonHeight);</span>
+        }
+        //otherwise:
+        else{
+            //draw the active resume button
+<span class="nc" id="L108">            game.getBatch().draw(resumeButtonActive,resumeButtonX,resumeButtonY,resumeButtonWidth,resumeButtonHeight);</span>
+        }
+
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        if (!isHoveringSettings){</span>
+<span class="nc" id="L112">            game.getBatch().draw(settingsButtonInactive,settingsButtonX,settingsButtonY,settingsButtonWidth,settingsButtonHeight);</span>
+        }
+        else{
+<span class="nc" id="L115">            game.getBatch().draw(settingsButtonActive,settingsButtonX,settingsButtonY,settingsButtonWidth,settingsButtonHeight);</span>
+        }
+
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        if (!isHoveringExit){</span>
+<span class="nc" id="L119">            game.getBatch().draw(exitButtonInactive,exitButtonX,exitButtonY,exitButtonWidth,exitButtonHeight);</span>
+        }
+        else{
+<span class="nc" id="L122">            game.getBatch().draw(exitButtonActive,exitButtonX,exitButtonY,exitButtonWidth,exitButtonHeight);</span>
+        }
+
+        //if the user clicks:
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        if (Gdx.input.justTouched()) {</span>
+            //on the resume button
+<span class="nc bnc" id="L128" title="All 2 branches missed.">            if (isHoveringResume) {</span>
+                //change the screen back to the game
+<span class="nc" id="L130">                game.setScreen(gameScreen);</span>
+<span class="nc" id="L131">                gameScreen.unPause();</span>
+<span class="nc" id="L132">                dispose();</span>
+            }
+            //on the settings button
+<span class="nc bnc" id="L135" title="All 2 branches missed.">            else if (isHoveringSettings) {</span>
+                // go to settings screen
+            }
+            //on the exit button
+<span class="nc bnc" id="L139" title="All 2 branches missed.">            else if (isHoveringExit) {</span>
+                //go back to the Main Menu
+<span class="nc" id="L141">                game.setScreen(new MainMenu(game));</span>
+            }
+        }
+<span class="nc" id="L144">        game.getBatch().end();</span>
+<span class="nc" id="L145">    }</span>
+
+    /**
+     * Called whenever the application is resized.
+     * &lt;p&gt;
+     * Updates how the viewport scales with screen pixels to keep the aspect ratio consistent.
+     *
+     * @param h height
+     * @param w width
+     * */
+    @Override
+    public void resize(int h, int w) {
+<span class="nc" id="L157">        viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());</span>
+        //set the camera centrally
+<span class="nc" id="L159">        viewport.getCamera().position.set(viewport.getWorldWidth() / 2f, viewport.getWorldHeight() / 2f, 0);</span>
+<span class="nc" id="L160">        viewport.getCamera().update();</span>
+<span class="nc" id="L161">    }</span>
+
+    @Override
+    public void pause() {
+
+<span class="nc" id="L166">    }</span>
+
+    @Override
+    public void resume() {
+
+<span class="nc" id="L171">    }</span>
+
+    @Override
+    public void hide() {
+
+<span class="nc" id="L176">    }</span>
+
+    @Override
+    public void dispose() {
+
+<span class="nc" id="L181">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

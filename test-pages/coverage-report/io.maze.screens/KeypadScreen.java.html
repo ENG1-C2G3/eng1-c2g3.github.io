@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KeypadScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.maze.screens</a> &gt; <span class="el_source">KeypadScreen.java</span></div><h1>KeypadScreen.java</h1><pre class="source lang-java linenums">package io.maze.screens;
+
+//when player clicks e, open a screen where the player can click buttons (numbers 0-9) and input three 3 numbers then click enter, if the correct code 793 is enterred the user can walk through lockedDoor collision layer 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+
+import io.maze.core.Main;
+
+/**
+ * Keypad screen that allows the player to input a 3-digit code
+ * If correct code (793) is entered, the locked door collision is removed
+ */
+
+public class KeypadScreen implements Screen, InputProcessor {
+    private final Main game;
+    private final GameScreen gameScreen;
+    private final ExtendViewport viewport;
+    private BitmapFont font;
+    private final SpriteBatch batch;
+
+    private List&lt;Integer&gt; enteredCode;
+    private boolean codeCorrect;
+    private String statusMessage;
+
+    //textures for the buttons
+    private Texture buttonTexture;
+    private Texture buttonPressedTexture;
+
+<span class="nc" id="L40">    public KeypadScreen(final Main game, final GameScreen gameScreen) {</span>
+<span class="nc" id="L41">        this.game = game;</span>
+<span class="nc" id="L42">        this.gameScreen = gameScreen;</span>
+<span class="nc" id="L43">        this.batch =game.getBatch();</span>
+<span class="nc" id="L44">        this.viewport = new ExtendViewport(16, 9);</span>
+<span class="nc" id="L45">        this.font = new BitmapFont();</span>
+<span class="nc" id="L46">        font.setUseIntegerPositions(false);</span>
+<span class="nc" id="L47">        font.getData().setScale(0.05f);</span>
+<span class="nc" id="L48">        font.setColor(Color.WHITE);</span>
+
+<span class="nc" id="L50">        this.enteredCode = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L51">        this.codeCorrect = false;</span>
+<span class="nc" id="L52">        this.statusMessage = &quot;Enter a 3-digit code&quot;;</span>
+
+        //load button textures -&gt; need to create them
+<span class="nc" id="L55">        this.buttonTexture = new Texture(&quot;objects/buttonInactive.png&quot;); //default greybutton atm</span>
+<span class="nc" id="L56">        this.buttonPressedTexture = new Texture(&quot;objects/buttonActive.png&quot;); //pressed state</span>
+
+        //set this screen as the input processor
+<span class="nc" id="L59">        Gdx.input.setInputProcessor(this);</span>
+
+<span class="nc" id="L61">    }</span>
+
+    @Override
+    public void render(float delta) {
+<span class="nc" id="L65">        ScreenUtils.clear(Color.DARK_GRAY);</span>
+<span class="nc" id="L66">        viewport.apply();</span>
+<span class="nc" id="L67">        batch.setProjectionMatrix(viewport.getCamera().combined);</span>
+<span class="nc" id="L68">        batch.begin();</span>
+
+        //draw the title
+<span class="nc" id="L71">        font.draw(batch, &quot;SECURITY KEYPAD&quot;,4.6f, 10.8f);</span>
+<span class="nc" id="L72">        font.draw(batch, statusMessage, 5.4f, 8.5f);</span>
+
+        //draw the entered code
+<span class="nc" id="L75">        StringBuilder codeDisplay = new StringBuilder();</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        for (int i = 0; i &lt; 3; i++) {</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">            if (i &lt; enteredCode.size()) {</span>
+<span class="nc" id="L78">                codeDisplay.append(enteredCode.get(i));</span>
+            }else {
+<span class="nc" id="L80">                codeDisplay.append(&quot;_&quot;);</span>
+            }
+<span class="nc bnc" id="L82" title="All 2 branches missed.">            if (i &lt; 2) {</span>
+<span class="nc" id="L83">                codeDisplay.append(&quot; &quot;);</span>
+            }
+        }
+<span class="nc" id="L86">        font.draw(batch, &quot;Code: &quot; + codeDisplay.toString(), 1.5f, 6.4f);</span>
+
+        //draw the keypad buttons (3x4 grid 0-9)
+<span class="nc" id="L89">        float buttonSize = 1.2f;</span>
+<span class="nc" id="L90">        float startX = 6f;</span>
+<span class="nc" id="L91">        float startY = 6f;</span>
+<span class="nc" id="L92">        float spacing = 0.2f;</span>
+
+        //number 0-9
+<span class="nc" id="L95">        String[] labels = {&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;7&quot;, &quot;8&quot;, &quot;9&quot;, &quot;C&quot;, &quot;0&quot;, &quot;E&quot;};</span>
+
+<span class="nc bnc" id="L97" title="All 2 branches missed.">        for (int row = 0; row &lt; 4; row ++) {</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">            for (int col = 0; col &lt; 3; col ++) {</span>
+<span class="nc" id="L99">                int index = row * 3 + col;</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">                if (index &lt; labels.length) {</span>
+<span class="nc" id="L101">                    float x = startX + col * (buttonSize + spacing);</span>
+<span class="nc" id="L102">                    float y = startY - row * (buttonSize + spacing);</span>
+
+<span class="nc" id="L104">                    batch.draw(buttonTexture, x, y, buttonSize, buttonSize);</span>
+<span class="nc" id="L105">                    font.draw(batch, labels[index], x + buttonSize/3, y + buttonSize/1.5f);</span>
+    
+                }
+            }
+        }
+
+        //if the entered code is correc show a success message and an option to close
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if (codeCorrect) {</span>
+<span class="nc" id="L113">            font.setColor(Color.GREEN);</span>
+<span class="nc" id="L114">            font.draw(batch, &quot;ACCESS GRANTED!&quot;, 4.4f, 1.5f);</span>
+<span class="nc" id="L115">            font.setColor(Color.WHITE);</span>
+        }
+
+<span class="nc" id="L118">        batch.end();</span>
+<span class="nc" id="L119">    }</span>
+
+    private void handleButtonPress(String button) {
+<span class="nc bnc" id="L122" title="All 2 branches missed.">        if (codeCorrect) return; //don't accept input after the code has already been entered correctly</span>
+<span class="nc bnc" id="L123" title="All 3 branches missed.">        switch(button) {</span>
+            case &quot;C&quot;: //clear
+<span class="nc" id="L125">                enteredCode.clear();</span>
+<span class="nc" id="L126">                statusMessage = &quot;Code cleared&quot;;</span>
+<span class="nc" id="L127">                break;</span>
+            case &quot;E&quot;: //enter code
+<span class="nc" id="L129">                checkCode();</span>
+<span class="nc" id="L130">                break;</span>
+            default: //number
+<span class="nc bnc" id="L132" title="All 4 branches missed.">                if (enteredCode.size() &lt; 3 &amp;&amp; button.matches(&quot;\\d&quot;)) {</span>
+<span class="nc" id="L133">                    enteredCode.add(Integer.parseInt(button));</span>
+<span class="nc" id="L134">                    statusMessage = &quot;Enter 3-digit code&quot;;</span>
+
+                    //auto submit when 3 digits are entered
+<span class="nc bnc" id="L137" title="All 2 branches missed.">                    if (enteredCode.size() == 3) {</span>
+<span class="nc" id="L138">                        checkCode();</span>
+                    }
+                }
+                break;
+        }
+<span class="nc" id="L143">    }</span>
+
+    private void checkCode() {
+<span class="nc bnc" id="L146" title="All 2 branches missed.">        if (enteredCode.size() != 3) {</span>
+<span class="nc" id="L147">            statusMessage = &quot;Enter exactly 3 digits&quot;;</span>
+<span class="nc" id="L148">            return;</span>
+        }
+
+        //check if the code is 793
+<span class="nc bnc" id="L152" title="All 6 branches missed.">        if (enteredCode.get(0) == 7 &amp;&amp; enteredCode.get(1) == 9 &amp;&amp; enteredCode.get(2) == 3) {</span>
+<span class="nc" id="L153">            codeCorrect = true;</span>
+<span class="nc" id="L154">            statusMessage = &quot;Code correct!&quot;;</span>
+
+            //remove the locked door from collision -&gt; need to implement in game screen
+<span class="nc bnc" id="L157" title="All 2 branches missed.">            if (gameScreen != null) {</span>
+<span class="nc" id="L158">                gameScreen.unlockDoor();</span>
+            }
+
+<span class="nc" id="L161">            game.setScreen(gameScreen);</span>
+<span class="nc" id="L162">            gameScreen.unPause();</span>
+        }else {
+<span class="nc" id="L164">            statusMessage = &quot;Incorrect code!&quot;;</span>
+<span class="nc" id="L165">            enteredCode.clear();</span>
+        }
+<span class="nc" id="L167">    }</span>
+
+    public boolean isCodeCorrect() {
+<span class="nc" id="L170">        return codeCorrect;</span>
+    }
+
+    //InputProcessor methods for mouse/touch input
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+<span class="nc" id="L176">        Vector3 touchPos = new Vector3(screenX, screenY, 0);</span>
+<span class="nc" id="L177">        viewport.getCamera().unproject(touchPos);</span>
+
+        //button gid coordinates (same as in ther render method)
+<span class="nc" id="L180">        float buttonSize = 1.2f;</span>
+<span class="nc" id="L181">        float startX = 6.f;</span>
+<span class="nc" id="L182">        float startY = 6f;</span>
+<span class="nc" id="L183">        float spacing = 0.2f;</span>
+
+<span class="nc" id="L185">        String[] labels = {&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;7&quot;, &quot;8&quot;, &quot;9&quot;, &quot;C&quot;, &quot;0&quot;, &quot;E&quot;};</span>
+
+<span class="nc bnc" id="L187" title="All 2 branches missed.">        for (int row = 0; row &lt; 4; row ++) {</span>
+<span class="nc bnc" id="L188" title="All 2 branches missed.">            for (int col = 0; col &lt; 3; col ++) {</span>
+<span class="nc" id="L189">                int index = row * 3 + col;</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">                if (index &lt; labels.length) {</span>
+<span class="nc" id="L191">                    float x = startX + col * (buttonSize + spacing);</span>
+<span class="nc" id="L192">                    float y = startY - row * (buttonSize + spacing);</span>
+
+<span class="nc bnc" id="L194" title="All 8 branches missed.">                    if (touchPos.x &gt;= x &amp;&amp; touchPos.x &lt;= x + buttonSize &amp;&amp; touchPos.y &gt;= y &amp;&amp; touchPos.y &lt;= y + buttonSize) {</span>
+<span class="nc" id="L195">                        handleButtonPress(labels[index]);</span>
+<span class="nc" id="L196">                        return true;</span>
+                    }
+
+                }  
+            }
+        }
+<span class="nc" id="L202">        return false;</span>
+    }
+
+    //required screen methods
+    @Override
+<span class="nc" id="L207">    public void show() {}</span>
+
+    @Override
+    public void resize(int width, int height) {
+<span class="nc" id="L211">        viewport.update(width, height);</span>
+<span class="nc" id="L212">        viewport.getCamera().position.set(viewport.getWorldWidth() / 2f, viewport.getWorldHeight() / 2f, 0);</span>
+<span class="nc" id="L213">        viewport.getCamera().update();</span>
+<span class="nc" id="L214">    }</span>
+
+    @Override
+<span class="nc" id="L217">    public void pause() {}</span>
+
+    @Override
+<span class="nc" id="L220">    public void resume() {}</span>
+
+    @Override
+    public void hide() {
+<span class="nc" id="L224">        Gdx.input.setInputProcessor(null); //reset the input processsor</span>
+<span class="nc" id="L225">    }</span>
+
+    @Override
+    public void dispose() {
+<span class="nc" id="L229">        font.dispose();</span>
+<span class="nc" id="L230">        buttonTexture.dispose();</span>
+<span class="nc" id="L231">        buttonPressedTexture.dispose();</span>
+<span class="nc" id="L232">    }</span>
+
+    //other InputProcessor methods (required but they aren't used)
+    @Override public boolean keyDown(int keycode) {
+        //close the screen when the player presses ESC
+<span class="nc bnc" id="L237" title="All 2 branches missed.">        if (keycode == com.badlogic.gdx.Input.Keys.ESCAPE) {</span>
+<span class="nc" id="L238">            game.setScreen(gameScreen);</span>
+<span class="nc" id="L239">            gameScreen.unPause();</span>
+<span class="nc" id="L240">            dispose();</span>
+<span class="nc" id="L241">            return true;</span>
+        }
+<span class="nc" id="L243">        return false;</span>
+    }
+<span class="nc" id="L245">    @Override public boolean keyUp(int keycode) {return false;}</span>
+<span class="nc" id="L246">    @Override public boolean keyTyped(char character) {return false;}</span>
+<span class="nc" id="L247">    @Override public boolean touchUp(int screenX, int screenY, int pointer, int button) {return false;}</span>
+<span class="nc" id="L248">    @Override public boolean touchDragged(int screenX, int screenY, int pointer) {return false;}</span>
+<span class="nc" id="L249">    @Override public boolean mouseMoved(int screenX, int screenY) {return false;}</span>
+<span class="nc" id="L250">    @Override public boolean scrolled(float amountX, float amountY) {return false;}</span>
+<span class="nc" id="L251">    @Override public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {return false;}</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

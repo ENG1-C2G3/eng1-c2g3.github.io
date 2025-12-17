@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExamQuestionScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.maze.screens</a> &gt; <span class="el_source">ExamQuestionScreen.java</span></div><h1>ExamQuestionScreen.java</h1><pre class="source lang-java linenums">package io.maze.screens;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+
+import io.maze.core.Main;
+
+public class ExamQuestionScreen implements Screen, InputProcessor {
+    private final Main game;
+    private final GameScreen gameScreen;
+    private final ExtendViewport viewport;
+    private BitmapFont font;
+    private final SpriteBatch batch;
+
+    private String question;
+    private String correctAnswer;
+    private StringBuilder userInput;
+    private boolean answerSubmitted;
+    private boolean isCorrect;
+
+<span class="nc" id="L27">    public ExamQuestionScreen(final Main game, final GameScreen gameScreen, String question, String correctAnswer) {</span>
+<span class="nc" id="L28">        this.game = game;</span>
+<span class="nc" id="L29">        this.gameScreen = gameScreen;</span>
+<span class="nc" id="L30">        this.batch = game.getBatch();</span>
+<span class="nc" id="L31">        this.viewport = new ExtendViewport(16, 9);</span>
+<span class="nc" id="L32">        this.font = new BitmapFont();</span>
+<span class="nc" id="L33">        font.setUseIntegerPositions(false);</span>
+<span class="nc" id="L34">        font.getData().setScale(0.04f);</span>
+<span class="nc" id="L35">        font.setColor(Color.WHITE);</span>
+
+<span class="nc" id="L37">        this.question = question;</span>
+<span class="nc" id="L38">        this.correctAnswer = correctAnswer.toLowerCase().trim();</span>
+<span class="nc" id="L39">        this.userInput = new StringBuilder();</span>
+<span class="nc" id="L40">        this.answerSubmitted = false;</span>
+<span class="nc" id="L41">        this.isCorrect = false;</span>
+
+<span class="nc" id="L43">        Gdx.input.setInputProcessor(this);</span>
+
+<span class="nc" id="L45">    }</span>
+
+    @Override
+    public void render(float delta) {
+<span class="nc" id="L49">        ScreenUtils.clear(Color.DARK_GRAY);</span>
+<span class="nc" id="L50">        viewport.apply();</span>
+<span class="nc" id="L51">        batch.setProjectionMatrix(viewport.getCamera().combined);</span>
+<span class="nc" id="L52">        batch.begin();</span>
+
+        //draw the question
+<span class="nc" id="L55">        font.draw(batch, &quot;Exam Question: &quot;, 5f, 8f);</span>
+<span class="nc" id="L56">        font.draw(batch, question, 1f, 7f);</span>
+
+        //draw the input box and user input
+<span class="nc" id="L59">        font.draw(batch, &quot;Your Answer: &quot;, 1f, 5f);</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        font.draw(batch, userInput.toString() + (System.currentTimeMillis() % 1000 &lt; 500 ? &quot;|&quot; : &quot;&quot;), 1f, 4.5f);</span>
+
+        //draw the instructions
+<span class="nc" id="L63">        font.draw(batch, &quot;Press ENTER to submit answer&quot;, 1f, 3f);</span>
+<span class="nc" id="L64">        font.draw(batch, &quot;Press ESC to cancel&quot;, 1f, 2.5f);</span>
+
+        //show the rsult is submitted
+<span class="nc bnc" id="L67" title="All 2 branches missed.">        if (answerSubmitted) {</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">            if (isCorrect) {</span>
+<span class="nc" id="L69">                font.setColor(Color.GREEN);</span>
+<span class="nc" id="L70">                font.draw(batch, &quot;Correct! Enjoy 8 seconds of immunity from the guards&quot;, 1f, 2f);</span>
+            } else {
+<span class="nc" id="L72">                font.setColor(Color.RED);</span>
+<span class="nc" id="L73">                font.draw(batch, &quot;Incorrect! The guards are getting quicker...&quot;, 1f, 2f);</span>
+            }
+
+<span class="nc" id="L76">            font.setColor(Color.WHITE);</span>
+<span class="nc" id="L77">            font.draw(batch, &quot;Press any key to continue&quot;, 1f, 1f);</span>
+        }
+
+<span class="nc" id="L80">        batch.end();</span>
+
+<span class="nc" id="L82">    }</span>
+
+    @Override
+    public boolean keyDown(int keycode) {
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        if (answerSubmitted) {</span>
+            //return to game after seeing the result
+<span class="nc" id="L88">            game.setScreen(gameScreen);</span>
+<span class="nc" id="L89">            gameScreen.handleExamResult(isCorrect);</span>
+<span class="nc" id="L90">            dispose();</span>
+<span class="nc" id="L91">            return true;</span>
+        }
+
+<span class="nc bnc" id="L94" title="All 4 branches missed.">        switch (keycode) {</span>
+            case com.badlogic.gdx.Input.Keys.ENTER:
+<span class="nc" id="L96">                submitAnswer();</span>
+<span class="nc" id="L97">                return true;</span>
+            case com.badlogic.gdx.Input.Keys.ESCAPE:
+                //cancel and return to the game
+<span class="nc" id="L100">                game.setScreen(gameScreen);</span>
+<span class="nc" id="L101">                gameScreen.unPause();</span>
+<span class="nc" id="L102">                dispose();</span>
+<span class="nc" id="L103">                return true;</span>
+            case com.badlogic.gdx.Input.Keys.BACKSPACE:
+<span class="nc bnc" id="L105" title="All 2 branches missed.">                if (userInput.length() &gt; 0) {</span>
+<span class="nc" id="L106">                    userInput.deleteCharAt(userInput.length() - 1);</span>
+                }
+<span class="nc" id="L108">                return true;</span>
+        }
+<span class="nc" id="L110">        return false;</span>
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+<span class="nc bnc" id="L115" title="All 6 branches missed.">        if (!answerSubmitted &amp;&amp; Character.isLetterOrDigit(character) || character == ' ') {</span>
+<span class="nc" id="L116">            userInput.append(character);</span>
+<span class="nc" id="L117">            return true;</span>
+        }
+<span class="nc" id="L119">        return false;</span>
+    }
+
+    private void submitAnswer() {
+<span class="nc" id="L123">        answerSubmitted = true;</span>
+<span class="nc" id="L124">        String userAnswer = userInput.toString().toLowerCase().trim();</span>
+<span class="nc" id="L125">        isCorrect = userAnswer.equals(correctAnswer);</span>
+<span class="nc" id="L126">    }</span>
+
+    public void handleExamResult(boolean correct) {
+<span class="nc" id="L129">        gameScreen.handleExamResult(correct);</span>
+<span class="nc" id="L130">    }</span>
+
+    //other required methods
+<span class="nc" id="L133">    @Override public void show() {}</span>
+    @Override public void resize(int width, int height) {
+<span class="nc" id="L135">        viewport.update(width, height);</span>
+<span class="nc" id="L136">        viewport.getCamera().position.set(viewport.getWorldWidth() / 2f, viewport.getWorldHeight() /2f, 0);</span>
+<span class="nc" id="L137">        viewport.getCamera().update();</span>
+<span class="nc" id="L138">    }</span>
+<span class="nc" id="L139">    @Override public void pause() {}</span>
+<span class="nc" id="L140">    @Override public void resume() {}</span>
+    @Override public void hide() {
+<span class="nc" id="L142">        Gdx.input.setInputProcessor(null);</span>
+<span class="nc" id="L143">    }</span>
+    @Override public void dispose() {
+<span class="nc" id="L145">        font.dispose();</span>
+<span class="nc" id="L146">    }</span>
+
+    //other InputProcessor methods unused
+<span class="nc" id="L149">    @Override public boolean keyUp(int keycode) {return false;}</span>
+<span class="nc" id="L150">    @Override public boolean touchDown(int screenX, int screenY, int pointer, int button) {return false;}</span>
+<span class="nc" id="L151">    @Override public boolean touchUp(int screenX, int screenY, int pointer, int button) {return false;}</span>
+<span class="nc" id="L152">    @Override public boolean touchDragged(int screenX, int screenY, int pointer) {return false;}</span>
+<span class="nc" id="L153">    @Override public boolean mouseMoved(int screenX, int screenY) {return false;}</span>
+<span class="nc" id="L154">    @Override public boolean scrolled(float amountX, float amountY) {return false;}</span>
+<span class="nc" id="L155">    @Override public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {return false;}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

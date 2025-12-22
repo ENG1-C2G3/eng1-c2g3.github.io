@@ -46,6 +46,8 @@ body {
     background-color: $secondary-color;
     grid-column: full-width;
     padding: calc(var(--padding) / 3);
+    position: sticky;
+    top: var(--padding);
   }
 
   & > footer {
@@ -169,7 +171,7 @@ body {
 }
 
 .pop-over:popover-open {
-    display: grid;
+    display: block;
 }
 
 // Blinking cursor elements.

@@ -16,7 +16,11 @@
               <code class="site-code">groupOne@{{ site.titleNoSpaces }}:~$</code>
             </a>
 
-            <code class="subtitle">~</code>
+            <code class="subtitle">~
+              {%- if page.title-%}
+                /{{page.title}}
+              {%- endif -%}
+            </code>
           </div>
         </div>
 

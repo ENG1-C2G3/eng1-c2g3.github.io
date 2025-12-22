@@ -9,23 +9,38 @@
 
 
     <nav class="site-nav">
-      <div class="left-nav">
-        <a class="site-title" rel="author" href="{{ "/" | relative_url }}">
-          <code class="site-code">groupOne@{{ site.titleNoSpaces }}:~$
-            <span class="blinking-cursor">█</span>
-          </code>
-        </a>
+      <div class="center-box">
+        <div class="center-item">
+          <div class="nav-prompt-grid">
+            <a class="site-title" rel="author" href="{{ "/" | relative_url }}">
+              <code class="site-code">groupOne@{{ site.titleNoSpaces }}:~$</code>
+            </a>
+
+            <code class="subtitle">~
+              {%- if page.title-%}
+                /{{page.title}}
+              {%- endif -%}
+            </code>
+          </div>
+        </div>
+
+        <div class="nav-add-icon">
+          <button popovertarget="new-tab-popover" class="icon-button new-tab-button"/>
+          <label>
+            <img class="icons" src="/GrepTheExit/assets/icons/menu-symbolic.svg" alt="Main Menu"/>
+          </label>
+        </div>
       </div>
 
-      <div class="right-nav">
-
-
+      <div popover id="new-tab-popover" class="pop-over">
+        <div class="pop-over-content">
         {%- for path in page_paths -%}
           {%- assign my_page = site.pages | where: "path", path | first -%}
           {%- if my_page.title -%}
           <a class="navbar-link" href="{{ my_page.url | relative_url }}">{{ my_page.title | escape }}</a>
           {%- endif -%}
         {%- endfor -%}
+        </div>
       </div>
     </nav>
   {%- endif -%}

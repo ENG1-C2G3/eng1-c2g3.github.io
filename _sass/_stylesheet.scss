@@ -12,6 +12,8 @@ $tritary-color: #877F94;
   --padding: 12px;
   --border-radius: 12px;
   --header-font-size: 2em;
+  --subtitle-font-size: 0.8em;
+  --transition-duration: 300ms;
 }
 
 body {
@@ -22,6 +24,7 @@ body {
   display: grid;
   grid-template-rows: auto 1fr auto;
   grid-template-columns: [full-width-start] 1fr [content-start] var(--content-max-width) [content-end] 1fr [full-width-end];
+  min-height: calc(100dvh - var(--header-padding)*2);
 
   & > * {
     display: grid;
@@ -42,8 +45,10 @@ body {
   & > header {
     font-size: var(--header-font-size);
     background-color: $secondary-color;
-    padding: var(--padding);
     grid-column: full-width;
+    padding: calc(var(--padding) / 3);
+    position: sticky;
+    top: var(--padding);
   }
 
   & > footer {
@@ -58,40 +63,70 @@ body {
 .site-nav {
   display: grid;
   grid-column: full-width;
-  grid-template-columns: 1fr 1fr;
   margin-inline: auto;
-  width: min(calc(100% - 2 * var(--header-padding)), calc( 1.5 * var(--content-max-width)));
+  width: calc(100% - 2 * var(--header-padding));
 }
 
-.left-nav {
+.center-box {
   display: flex;
+  justify-content: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  & > .center-item {
+    display: flex;
+    justify-content: center;
+    width: 90%;
+  }
 }
 
-.right-nav{
+.nav-prompt-grid {
   display: grid;
-  grid-gap: var(--padding);
-  grid-auto-flow: column;
-  justify-content: end;
+
+  & > * {
+    text-align: center;
+  }
 }
 
-.sidebar-buttons {
-  display: grid;
-  grid-gap: var(--padding);
-  padding: var(--padding);
+.nav-add-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-button {
+    background-color: $secondary-color;
+    border-style: none;
+    border-radius: var(--border-radius);
+    padding: calc(var(--padding) / 2);
+    padding-bottom: 3px;
+    &:hover, &:active{
+      background-color: $tritary-color;
+      transition-duration: var(--transition-duration);
+    }
+}
+
+.new-tab-button {
+  anchor-name: --new-tab-anchor;
 }
 
 .navbar-link {
-  border-style: solid;
-  border-color: $primary-color;
   font-weight: bold;
   text-align: center;
+}
 
+.subtitle {
+  color: $primary-color;
+  font-weight: 400;
+  font-size: var(--subtitle-font-size);
+  user-select: none;
 }
 
 .site-title, .navbar-link {
   color: $primary-color;
   border-radius: var(--border-radius);
-  padding: 4px var(--padding);
+  padding: calc(var(--padding) / 3) var(--padding);
 
   &:hover, &:focus {
     background-color: $primary-color;
@@ -99,7 +134,7 @@ body {
   }
 
   &:hover {
-    transition-duration: 420ms;
+    transition-duration: var(--transition-duration);
   }
 }
 
@@ -107,13 +142,41 @@ body {
   font-size: var(--font-size-big);
   font-weight: 900;
   position: absolute;
-  transform: translateY(-200%);
+  transform: translateY(-300%);
   margin-inline-start: var(--padding);
   padding: var(--padding);
 
   &:focus {
-    transform: translateY(0);
+    transform: translateY(5%);
+    transition-duration: var(--transition-duration);
   }
+}
+
+.pop-over {
+  position: absolute;
+  position-anchor: --new-tab-anchor;
+  margin: 0;
+  inset: auto;
+  top: anchor(top);
+  right: anchor(right);
+
+  color: $primary-color;
+  background-color: $secondary-color;
+
+  border: solid;
+  border-width: calc(var(--border-radius) / 2);
+  border-color: $tritary-color;
+  border-radius: var(--border-radius);
+
+  transform: translate(50px, 45px);
+}
+
+.pop-over-content {
+  display: grid;
+}
+
+.pop-over:popover-open {
+    display: block;
 }
 
 // Blinking cursor elements.
@@ -141,7 +204,7 @@ img {
   width: 200px;
 }
 
-.svg-icon {
+.icons {
   width: 32px;
   height: 32px;
 }
@@ -156,8 +219,7 @@ a {
     padding: var(--padding) 0px;
   }
 
-  .left-nav, .right-nav {
-    justify-content: center;
+  .center-item {
     grid-auto-flow: row;
   }
 
@@ -165,9 +227,17 @@ a {
     display: inherit;
   }
 
+  body > footer {
+    display: block;
+  }
+
   .site-nav {
     grid-template-columns: none;
     grid-gap: var(--padding);
+  }
+
+  .pop-over {
+    right: calc(0% + (var(--padding) * 3.5) + 16px);
   }
 }
 

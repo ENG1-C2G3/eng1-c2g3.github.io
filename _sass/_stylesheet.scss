@@ -12,6 +12,7 @@ $tritary-color: #877F94;
   --padding: 12px;
   --border-radius: 12px;
   --header-font-size: 2em;
+  --header-font-size-mobile: 1.5em;
   --subtitle-font-size: 0.8em;
   --transition-duration: 300ms;
 }
@@ -57,6 +58,15 @@ body {
     padding: var(--padding);
     grid-column: full-width;
   }
+}
+
+a {
+  text-decoration: none;
+  color: $tritary-color;
+}
+
+h1 {
+  text-align: center;
 }
 
 // Navigation + Sidebar
@@ -209,14 +219,10 @@ img {
   height: 32px;
 }
 
-a {
-  text-decoration: none;
-  color: $tritary-color;
-}
-
 @media screen and ($mobile) {
   body > header {
     padding: var(--padding) 0px;
+    font-size: var(--header-font-size-mobile);
   }
 
   .center-item {

@@ -8,6 +8,6 @@ title: Home
 
 # A 2D maze-game about eating cookies and doing exams.
 
-< DOWNLOAD LINK HERE > < GITHUB LINK HERE > < TEST RESULTS LINK HERE >
+{% include links.html %}
 
 < Game Description Here >

@@ -16,10 +16,10 @@ title: Deliverables
 ## Previous Deliverables 
 
 ### Requirements
-{% include download.html download="/GrepTheExit/assets/pdf" %}
+{% include download.html download="/GrepTheExit/assets/pdfs/Req1.pdf" name="Requirements" %}
 
 ### Architecture
-{% include download.html download="/GrepTheExit/assets/pdf" %}
+{% include download.html download="/GrepTheExit/assets/pdfs/Arch1.pdf" name="Architecture" %}
 
 #### Images
 ![Arch1](/GrepTheExit/assets/graphs/arch1.png)
@@ -29,10 +29,10 @@ title: Deliverables
 ![Arch1](/GrepTheExit/assets/graphs/arch5.png)
 
 ### Method selection and planning
-{% include download.html download="/GrepTheExit/assets/pdf" %}
+{% include download.html download="/GrepTheExit/assets/pdfs/Plan1.pdf" name="Planning" %}
 
 ### Risk assessment and mitigation
-{% include download.html download="/GrepTheExit/assets/pdf" %}
+{% include download.html download="/GrepTheExit/assets/pdfs/Risk1.pdf" name="Risk" %}
 
 ### Implementation
-{% include download.html download="/GrepTheExit/assets/pdf" %}
+{% include download.html download="/GrepTheExit/assets/pdfs/Impl1.pdf" name="Implementation" %}

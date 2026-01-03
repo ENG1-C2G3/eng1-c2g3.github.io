@@ -41,6 +41,10 @@ body {
 
   & > main {
     border: none;
+    * > img {
+      max-width: 100%;
+    }
+    margin-bottom: var(--padding);
   }
 
   & > header {
@@ -65,7 +69,7 @@ a {
   color: $tritary-color;
 }
 
-h1 {
+h1,h3,h4 {
   text-align: center;
 }
 
@@ -195,6 +199,24 @@ h1 {
 }
 
 // Bar of links on the top of the page.
+.button-link-single {
+  display: grid;
+  justify-content: center;
+  & > div {
+    display: grid;
+    border: solid;
+    border-width: calc(var(--border-radius) / 2);
+    border-color: $tritary-color;
+    border-radius: calc(var(--border-radius) * 2);
+    padding: calc(var(--padding) / 2);
+
+    & > .button-content > div {
+      grid-gap: var(--padding);
+      padding: 0 var(--padding);
+    }
+  }
+}
+
 .button-link-group {
   display: flex;
   justify-content: center;
@@ -258,9 +280,7 @@ h1 {
   font-weight: bold;
 }
 
-img {
-  width: 200px;
-}
+
 
 .icons {
   width: 32px;
